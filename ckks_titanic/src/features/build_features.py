@@ -77,13 +77,13 @@ def processing(raw_train_df, raw_test_df, isSaved=False, write_path=WRITE_PATH):
     for col in col_to_reg:
         data_df[col] = (data_df[col] - data_df[col].mean()) / data_df[col].std()
 
-    preprocessed_train_df = data_df.iloc[:raw_train_df.shape[0]]
-    preprocessed_test_df = data_df.iloc[raw_train_df.shape[0]:].drop('Survived', axis=1)
+    processed_train_df = data_df.iloc[:raw_train_df.shape[0]]
+    processed_test_df = data_df.iloc[raw_train_df.shape[0]:].drop('Survived', axis=1)
 
     if isSaved:
-        preprocessed_train_df.to_csv(write_path + "preprocessed_train.csv")
-        preprocessed_test_df.to_csv(write_path + "preprocessed_test.csv")
-    return preprocessed_train_df, preprocessed_test_df
+        processed_train_df.to_csv(write_path + "processed_train.csv")
+        processed_test_df.to_csv(write_path + "processed_test.csv")
+    return processed_train_df, processed_test_df
 
 
 if __name__ == "__main__":
