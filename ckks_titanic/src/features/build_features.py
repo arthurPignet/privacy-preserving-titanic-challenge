@@ -1,3 +1,5 @@
+import logging
+
 import pandas as pd
 
 from sklearn.preprocessing import LabelEncoder
@@ -18,6 +20,9 @@ def data_import(path=DATA_PATH):
     ------------
     tuple : (pandas_df: train_set, pandas_df: test_set)
     """
+    logger = logging.getLogger(__name__)
+    logger.info('loading the data into memory (pandas df)')
+
     raw_train_set_df = pd.read_csv(path + "train.csv")
     raw_test_set_df = pd.read_csv(path + "test.csv")
     return raw_train_set_df, raw_test_set_df
@@ -42,6 +47,8 @@ def processing(raw_train_df, raw_test_df, isSaved=False, write_path=WRITE_PATH):
 
     return
     """
+    logger = logging.getLogger(__name__)
+    logger.info('making final data set from raw data')
     data_df = pd.concat([raw_train_df, raw_test_df], sort=True).reset_index(drop=True)
     data_df.Embarked = data_df.Embarked.fillna('S')
     data_df["Age"] = data_df.groupby(['Sex', 'Pclass', 'Embarked'])["Age"].apply(lambda x: x.fillna(x.median()))
