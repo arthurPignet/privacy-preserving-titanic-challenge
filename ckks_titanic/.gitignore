@@ -1,7 +1,7 @@
 # Project template specifics
 /_can_be_deleted/
 /confidential/
-/data/
+#/data/
 secrets.yaml
 
 
