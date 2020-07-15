@@ -153,10 +153,12 @@ class LogisticRegressionHE:
         return np.mean(err)
 
     def encrypted_accuracy(self, X_test, Y_test):
+        self.weight = self.refresh(self.weight)
+        self.bias = self.refresh(self.bias)
         prediction = self.forward(X_test)
-        err = Y_test[0] - prediction[0]
+        err = np.array(Y_test[0].decrypt(self.secret_key)) - prediction[0]
         for i in range(1, len(X_test)):
-            err += np.float(np.abs((Y_test[i].decrypt() - prediction[i]).decrypt()) < 0.5)
+            err += np.float(np.abs((np.array(Y_test[i].decrypt(self.secret_key)) - prediction[i]).decrypt()) < 0.5)
         return err / len(X_test)
 
     def __call__(self, *args, **kwargs):
