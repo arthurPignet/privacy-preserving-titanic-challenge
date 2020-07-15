@@ -11,7 +11,7 @@ class LogisticRegressionHE:
         if not safety:
             self.direction_ne = []
             self.loss_ne = []
-            logger.critical(" The data will be decrypted during the process, the protocol is not safe")
+            logger.critical("The data will be decrypted during the process, the protocol is not safe")
             assert not secret_key, "The protocol chosen (safety is set to false) need the secret key decrypt ciphertext"
 
         self.safety = safety
@@ -99,7 +99,7 @@ class LogisticRegressionHE:
         self.direction_ne.append((ne_direction_weight, ne_direction_bias))
         self.grad_norm.append((direction_weight.decrypt(), direction_bias.decrypt()))
         logger.debug(
-            "error %d" % (np.sum(np.power((np.array(direction_weight.decrypt()) - ne_direction_weight), 2)) / np.sum(
+            "At the first iteration, the error of encryption on the gradient is %d" % (np.sum(np.power((np.array(direction_weight.decrypt()) - ne_direction_weight), 2)) / np.sum(
                 np.power(ne_direction_weight, 2))))
 
         while self.iter < self.num_iter:
@@ -116,19 +116,23 @@ class LogisticRegressionHE:
             self.bias -= direction_bias
             self.bias_ne -= ne_direction_bias
             self.iter += 1
-            if self.verbose and self.iter % 5 == 0:
+            if self.verbose and self.iter % 1 == 0:
                 logger.info("iteration number %d is starting" % self.iter)
                 if not self.safety:
-                    loss = np.log(encrypted_prediction.decrypt(self.secret_key)).dot(Y.decrypt(self.secret_key))
-                    loss += (1 - np.array(Y.decrypt(self.secret_key))).T.dot(
-                        np.log(1 - np.array(encrypted_prediction.decrypt(self.secret_key))))
+                    """
+                    dec_pred =[i.decrypt(self.secret_key) for i in encrypted_prediction]
+                    dec_Y = [i.decrypt(self.secret_key) for i in Y]
+                    loss = np.log(dec_pred).dot(dec_Y)
+                    loss += (1 - np.array(dec_Y)).T.dot(
+                        np.log(1 - np.array(dec_pred)))
                     loss += (self.reg_para / 2) * self.weight.dot(self.weight).decrypt(self.secret_key)
-                    ne_loss = np.log(prediction).dot(Y_ne)
-                    ne_loss += (1 - np.array(Y_ne)).T.dot(np.log(1 - np.array(prediction)))
+                    """
+                    ne_loss = - np.log(prediction).dot(Y_ne)
+                    ne_loss -= (1 - np.array(Y_ne)).T.dot(np.log(1 - np.array(prediction)))
                     ne_loss += (self.reg_para / 2) * self.weight_ne.dot(self.weight_ne)
                     self.loss_ne.append(ne_loss)
-                    self.loss.append(loss)
-                    logger.info('Loss on the encrypted fit : %d ' % (self.loss[-1]))
+                    #self.loss.append(loss)
+                    #logger.info('Loss on the encrypted fit : %d ' % (self.loss[-1]))
                     logger.info('Loss on the unencrypted fit : %d ' % (self.loss_ne[-1]))
 
                     self.direction_ne.append((ne_direction_weight, ne_direction_bias))
