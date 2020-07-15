@@ -1,7 +1,7 @@
 CKKS_titanic
 ==============================
 
-Resolving the titanic datascience problem using homomorphic encryption, implemented with the CKKS schem
+Resolving the titanic datascience problem using homomorphic encryption. We use the CKKS scheme implemented in TenSEAL ( see https://github.com/OpenMined/TenSEAL )
 
 Project Organization
 ------------
