@@ -25,6 +25,7 @@ def data_import(path=DATA_PATH):
 
     raw_train_set_df = pd.read_csv(path + "train.csv")
     raw_test_set_df = pd.read_csv(path + "test.csv")
+    logger.info('Done')
     return raw_train_set_df, raw_test_set_df
 
 
@@ -79,7 +80,7 @@ def processing(raw_train_df, raw_test_df, isSaved=False, write_path=WRITE_PATH):
 
     processed_train_df = data_df.iloc[:raw_train_df.shape[0]]
     processed_test_df = data_df.iloc[raw_train_df.shape[0]:].drop('Survived', axis=1)
-
+    logger.info('Done')
     if isSaved:
         processed_train_df.to_csv(write_path + "processed_train.csv")
         processed_test_df.to_csv(write_path + "processed_test.csv")
