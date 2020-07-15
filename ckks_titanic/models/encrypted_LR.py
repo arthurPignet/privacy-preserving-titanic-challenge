@@ -1,35 +1,39 @@
 import logging
 
 import numpy as np
-import tenseal as ts
-
 
 
 class LogisticRegressionHE:
-    def __init__(self, local_context=None, lr=0.01, num_iter=100000,
-                 verbose=False, reg_para=0.5, safety=False):
-
+    def __init__(self, weight, bias, weight_ne, bias_ne, refresh_function, refresh_kwarg=None, lr=0.01,
+                 num_iter=100000,
+                 verbose=False, reg_para=0.5, safety=False, secret_key=None, ):
+        logger = logging.getLogger(__name__)
         if not safety:
-            self.DIR_NE = []
-            self.CRITERE_NE = []
-            logging.critical(" The data will be decrypted during the process, the protocol is not safe")
-            assert local_context is not None, "The protocol chosen (safety is set to false) need the context to refresh and decrypt ciphertext"
+            self.direction_ne = []
+            self.loss_ne = []
+            logger.critical(" The data will be decrypted during the process, the protocol is not safe")
+            assert not secret_key, "The protocol chosen (safety is set to false) need the secret key decrypt ciphertext"
+
         self.safety = safety
-        self.num_iter = num_iter
+        self.secret_key = secret_key
+        self.refresh_function = refresh_function
+        self.refresh_kwarg = refresh_kwarg
         self.verbose = verbose
-        self.loss = []
-        self.grad_norm = []
-        self.weight = None
-        self.weight_ne = None
-        self.bias = None
-        self.bias_ne = None
+
         self.iter = 0
-        self.context = local_context
+        self.num_iter = num_iter
         self.reg_para = reg_para
         self.lr = lr
 
+        self.loss = []
+        self.grad_norm = []
+        self.weight_ne = weight_ne
+        self.weight = weight
+        self.bias_ne = bias_ne
+        self.bias = bias
+
     def refresh(self, vector):
-        return ts.ckks_vector(self.context, vector.decrypt())
+        return self.refresh_function(vector, **self.refresh_kwarg)
 
     @staticmethod
     def sigmoid(enc_x, mult_coef=1):
@@ -82,20 +86,8 @@ class LogisticRegressionHE:
         return direction_weight, direction_bias
 
     def fit(self, X, Y, X_ne=None, Y_ne=None):
-        # initialization to 0.
-        self.weight_ne = [0. for _ in range(X[0].size())]
-        self.weight = ts.ckks_vector(self.context, self.weight_ne)
-        self.weight_ne = np.array(self.weight_ne)
-        self.bias_ne = [0.]
-        self.bias = ts.ckks_vector(self.context, self.bias_ne)
-        self.bias_ne = np.array(self.bias_ne)
-        # initial values
-        # for i in range(len(X)):
-        #     print(X[i].decrypt())
-        # print(X_ne)
-        # for i in range(len(Y)):
-        #     print(Y[i].decrypt())
-        # print(Y_ne)
+        logger = logging.getLogger(__name__)
+
         encrypted_prediction = self.forward(X)  # we can add batching later
         prediction = self.forward_ne(X_ne)
         direction_weight, direction_bias = self.backward(X, encrypted_prediction, Y)
@@ -103,14 +95,10 @@ class LogisticRegressionHE:
         ne_loss = np.log(prediction).dot(Y_ne)
         ne_loss += (1 - np.array(Y_ne)).T.dot(np.log(1 - np.array(prediction)))
         ne_loss += (self.reg_para / 2) * self.weight_ne.dot(self.weight_ne)
-        self.CRITERE_NE.append(ne_loss)
-        self.DIR_NE.append((ne_direction_weight, ne_direction_bias))
+        self.loss_ne.append(ne_loss)
+        self.direction_ne.append((ne_direction_weight, ne_direction_bias))
         self.grad_norm.append((direction_weight.decrypt(), direction_bias.decrypt()))
-        logging.debug("encrypted grad")
-        logging.debug(direction_weight.decrypt())
-        logging.debug('Unencrypted grad')
-        logging.debug(ne_direction_weight)
-        logging.debug(
+        logger.debug(
             "error %d" % (np.sum(np.power((np.array(direction_weight.decrypt()) - ne_direction_weight), 2)) / np.sum(
                 np.power(ne_direction_weight, 2))))
 
@@ -128,20 +116,24 @@ class LogisticRegressionHE:
             self.bias -= direction_bias
             self.bias_ne -= ne_direction_bias
             self.iter += 1
-            if self.verbose and self.iter % 1 == 0:
-                logging.info("iteration number %d is starting" % self.iter)
+            if self.verbose and self.iter % 5 == 0:
+                logger.info("iteration number %d is starting" % self.iter)
                 if not self.safety:
+                    loss = np.log(encrypted_prediction.decrypt(self.secret_key)).dot(Y.decrypt(self.secret_key))
+                    loss += (1 - np.array(Y.decrypt(self.secret_key))).T.dot(
+                        np.log(1 - np.array(encrypted_prediction.decrypt(self.secret_key))))
+                    loss += (self.reg_para / 2) * self.weight.dot(self.weight).decrypt(self.secret_key)
                     ne_loss = np.log(prediction).dot(Y_ne)
                     ne_loss += (1 - np.array(Y_ne)).T.dot(np.log(1 - np.array(prediction)))
                     ne_loss += (self.reg_para / 2) * self.weight_ne.dot(self.weight_ne)
-                    self.CRITERE_NE.append(ne_loss)
-                    self.DIR_NE.append((ne_direction_weight, ne_direction_bias))
+                    self.loss_ne.append(ne_loss)
+                    self.loss.append(loss)
+                    logger.info('Loss on the encrypted fit : %d ' % (self.loss[-1]))
+                    logger.info('Loss on the unencrypted fit : %d ' % (self.loss_ne[-1]))
+
+                    self.direction_ne.append((ne_direction_weight, ne_direction_bias))
                     self.grad_norm.append((direction_weight.decrypt(), direction_bias.decrypt()))
-                    logging.debug("encrypted grad")
-                    logging.debug(direction_weight.decrypt())
-                    logging.debug('Unencrypted grad')
-                    logging.debug(ne_direction_weight)
-                    logging.debug(
+                    logger.debug(
                         "error %d" % (np.sum(
                             np.power((np.array(direction_weight.decrypt()) - ne_direction_weight), 2)) / np.sum(
                             np.power(ne_direction_weight, 2))))
