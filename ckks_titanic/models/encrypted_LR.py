@@ -36,9 +36,8 @@ class LogisticRegressionHE:
         self.lr = lr
 
         if not safety:
-            self.direction_ne = []
+            self.error = []
         self.loss_list = []
-        self.grad_norm = []
         self.weight_ne = weight_ne
         self.weight = init_weight
         self.bias_ne = bias_ne
@@ -51,23 +50,25 @@ class LogisticRegressionHE:
         return self.loss_function(self.weight, self.bias, self.reg_para, **self.confidential_kwarg)
 
     def accuracy(self, unencrypted_X=None, unencrypted_Y=None):
-        return self.accuracy_function(self.weight, self.bias, prior_unencrypted_X=unencrypted_X, prior_unencrypted_Y=unencrypted_Y, **self.confidential_kwarg)
+        return self.accuracy_function(self.weight, self.bias, prior_unencrypted_X=unencrypted_X,
+                                      prior_unencrypted_Y=unencrypted_Y, **self.confidential_kwarg)
 
     @staticmethod
     def sigmoid(enc_x, mult_coeff=1):
         # We use the polynomial approximation of degree 3
         # sigmoid(x) = 0.5 + 0.197 * x - 0.004 * x^3
         # from https://eprint.iacr.org/2018/462.pdf
+        # Therefore the use of mult_coeff allows us to multiply the encrypted result of the polynomial evaluation
+        # without homomorph multiplication
+
         poly_coeff = [0.5, 0.197, 0, -0.004]
-        return enc_x.polyval([i * mult_coeff for i in
-                              poly_coeff])  # The use of mult_coeff allows us to multiply the encrypted result of the polynomial evaluation without homomorphique multiplication
+        return enc_x.polyval([i * mult_coeff for i in poly_coeff])
 
     @staticmethod
     def sigmoid_ne(enc_x, mult_coeff=1):
         # We use the polynomial approximation of degree 3
         # sigmoid(x) = 0.5 + 0.197 * x - 0.004 * x^3
         # from https://eprint.iacr.org/2018/462.pdf
-        poly_coeff = [0.5, 0.197, 0, -0.004]
         return (np.power(enc_x, 3) * -0.004 + enc_x * 0.197 + 0.5) * mult_coeff
 
     def forward(self, vec, mult_coeff=1):
@@ -119,28 +120,30 @@ class LogisticRegressionHE:
             self.weight = self.refresh(self.weight)
             self.bias = self.refresh(
                 self.bias)  # refreshing the init_weight and the init_bias to avoid scale out of bound
+            # encrypted gradient descent
             encrypted_prediction = self.forward(X)  # we can add batching later
             direction_weight, direction_bias = self.backward(X, encrypted_prediction, Y)
-            prediction = self.forward_ne(X_ne)
-            ne_direction_weight, ne_direction_bias = self.backward_ne(X_ne, prediction, Y_ne)
-            self.weight -= direction_weight
-            self.weight_ne -= ne_direction_weight
             self.bias -= direction_bias
-            self.bias_ne -= ne_direction_bias
+            self.weight -= direction_weight
+            # unencrypted gradient descent
+            if self.verbose > 0:
+                unencrypted_prediction = self.forward_ne(X_ne)
+                ne_direction_weight, ne_direction_bias = self.backward_ne(X_ne, unencrypted_prediction, Y_ne)
+                self.weight_ne -= ne_direction_weight
+                self.bias_ne -= ne_direction_bias
+                if self.iter % self.verbose == 0:
+                    self.logger.info("iteration number %d is starting" % (self.iter + 1))
+                    self.loss_list.append(self.loss())
+                    self.logger.info('Loss : ' + str(self.loss_list[-1]) + ".")
+                    if not self.safety:
+                        err = (np.sum(
+                            np.power((np.array(direction_weight.decrypt()) - ne_direction_weight), 2)) /
+                               np.sum(np.power(ne_direction_weight, 2)))
+                        self.error.append(err)
+                        self.logger.debug(
+                            "error %d" % self.error[-1])
+
             self.iter += 1
-            if self.verbose > 0 and self.iter % self.verbose == 0:
-                self.logger.info("iteration number %d is starting" % self.iter)
-                self.loss_list.append(self.loss())
-                self.logger.info('Loss : ' + str(self.loss_list[-1]) + ".")
-                if not self.safety:
-                    prediction = self.forward_ne(X_ne)
-                    ne_direction_weight, ne_direction_bias = self.backward_ne(X_ne, prediction, Y_ne)
-                    self.direction_ne.append((ne_direction_weight, ne_direction_bias))
-                    self.grad_norm.append((direction_weight.decrypt(), direction_bias.decrypt()))
-                    self.logger.debug(
-                        "error %d" % (np.sum(
-                            np.power((np.array(direction_weight.decrypt()) - ne_direction_weight), 2)) / np.sum(
-                            np.power(ne_direction_weight, 2))))
 
     def predict(self, X):
         return self.forward(X)
