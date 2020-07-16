@@ -4,20 +4,26 @@ import numpy as np
 
 
 class LogisticRegressionHE:
-    def __init__(self, weight, bias, weight_ne, bias_ne, refresh_function, refresh_kwarg=None, lr=0.01,
+    def __init__(self, 
+                 weight,
+                 bias,
+                 weight_ne,
+                 bias_ne, 
+                 refresh_function,
+                 confidential_kwarg,
+                 loss=None, 
+                 accuracy=None,
+                 lr=1,
                  num_iter=100,
-                 verbose=False, reg_para=0.5, safety=False, secret_key=None, ):
+                 reg_para=0.5, 
+                 verbose=False, 
+                 ):
         logger = logging.getLogger(__name__)
-        if not safety:
-            self.direction_ne = []
-            self.loss_ne = []
-            logger.critical("The data will be decrypted during the process, the protocol is not safe")
-            assert not secret_key, "The protocol chosen (safety is set to false) need the secret key decrypt ciphertext"
 
-        self.safety = safety
-        self.secret_key = secret_key
         self.refresh_function = refresh_function
-        self.refresh_kwarg = refresh_kwarg
+        self.confidential_kwarg = refresh_kwarg
+        self.loss_function = loss
+        self.accuracy_function = accuracy
         self.verbose = verbose
 
         self.iter = 0
@@ -34,7 +40,11 @@ class LogisticRegressionHE:
 
     def refresh(self, vector):
         return self.refresh_function(vector, **self.refresh_kwarg)
-
+    def loss(self):
+        return self.loss_function(**self.loss_kwarg)
+    def accuracy(self):
+        return self.accuracy_function(**self.accuracy_function)
+    
     @staticmethod
     def sigmoid(enc_x, mult_coeff=1):
         #We use the polynomial approximation of degree 3
@@ -96,10 +106,9 @@ class LogisticRegressionHE:
     def fit(self, X, Y, X_ne=None, Y_ne=None):
         logger = logging.getLogger(__name__)
         while self.iter < self.num_iter:
-            if not self.safety:
-                self.weight = self.refresh(self.weight)
-                self.bias = self.refresh(self.bias)
-                # refreshing the weight and the bias to avoid scale out of bound
+            
+            self.weight = self.refresh(self.weight)
+            self.bias = self.refresh(self.bias)     # refreshing the weight and the bias to avoid scale out of bound
             encrypted_prediction = self.forward(X)  # we can add batching later
             prediction = self.forward_ne(X_ne)
             direction_weight, direction_bias = self.backward(X, encrypted_prediction, Y)
@@ -108,7 +117,7 @@ class LogisticRegressionHE:
             self.weight_ne -= ne_direction_weight
             self.bias -= direction_bias
             self.bias_ne -= ne_direction_bias
-            self.iter += 1
+            self.iter += 1                
             if self.verbose and self.iter % 10 == 0:
                 logger.info("iteration number %d is starting" % self.iter)
                 if not self.safety:
@@ -149,14 +158,7 @@ class LogisticRegressionHE:
             err += np.float(np.abs(Y_test[i] - prediction[i]) < 0.5)
         return np.mean(err)
 
-    def encrypted_accuracy(self, X_test, Y_test):
-        self.weight = self.refresh(self.weight)
-        self.bias = self.refresh(self.bias)
-        prediction = self.forward(X_test)
-        err = np.array(Y_test[0].decrypt(self.secret_key)) - prediction[0]
-        for i in range(1, len(X_test)):
-            err += np.float(np.abs((np.array(Y_test[i].decrypt(self.secret_key)) - prediction[i]).decrypt()) < 0.5)
-        return err / len(X_test)
+  
 
     def __call__(self, *args, **kwargs):
         return self.forward(*args, **kwargs)
