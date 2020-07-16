@@ -39,14 +39,19 @@ def processing(raw_train_df, raw_test_df, isSaved=False, write_path=WRITE_PATH):
 
     :parameter
     ------------
+
     train_df : dataframe with train_df data
     preprocessed_test_df : dataframe with test data
     (Optional) isSaved : boolean, if True the output data will be stored in the write_path
     (Optional) write_path : if isSaved, path where the output dataframe will be saved, in csv format.
+
     :returns
     ----------
 
-    return
+    processed_train_df : train data set, after data completion, data scaling, and feature engineering.
+    processed_test_df : test data set, after data completion, data scaling, and feature engineering.
+
+
     """
     logger = logging.getLogger(__name__)
     logger.info('making final data set from raw data')
