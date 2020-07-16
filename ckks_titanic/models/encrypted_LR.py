@@ -4,62 +4,70 @@ import numpy as np
 
 
 class LogisticRegressionHE:
-    def __init__(self, 
-                 weight,
-                 bias,
+    def __init__(self,
+                 init_weight,
+                 init_bias,
                  weight_ne,
-                 bias_ne, 
+                 bias_ne,
                  refresh_function,
                  confidential_kwarg,
-                 loss=None, 
+                 loss=None,
                  accuracy=None,
                  lr=1,
                  num_iter=100,
-                 reg_para=0.5, 
-                 verbose=False, 
+                 reg_para=0.5,
+                 verbose=False,
+                 safety = False,
                  ):
-        logger = logging.getLogger(__name__)
+        self.logger = logging.getLogger(__name__)
 
         self.refresh_function = refresh_function
-        self.confidential_kwarg = refresh_kwarg
+        self.confidential_kwarg = confidential_kwarg
         self.loss_function = loss
         self.accuracy_function = accuracy
+
         self.verbose = verbose
+        self.safety = safety
 
         self.iter = 0
         self.num_iter = num_iter
         self.reg_para = reg_para
         self.lr = lr
 
+        if not safety:
+            self.direction_ne = []
         self.loss_list = []
         self.grad_norm = []
         self.weight_ne = weight_ne
-        self.weight = weight
+        self.weight = init_weight
         self.bias_ne = bias_ne
-        self.bias = bias
+        self.bias = init_bias
 
     def refresh(self, vector):
-        return self.refresh_function(vector, **self.refresh_kwarg)
+        return self.refresh_function(vector, **self.confidential_kwarg)
+
     def loss(self):
-        return self.loss_function(**self.loss_kwarg)
+        return self.loss_function(self.weight, self.bias, self.confidential_kwarg)
+
     def accuracy(self):
-        return self.accuracy_function(**self.accuracy_function)
-    
+        return self.accuracy_function(self.weight, self.bias, self.confidential_kwarg)
+
     @staticmethod
     def sigmoid(enc_x, mult_coeff=1):
-        #We use the polynomial approximation of degree 3
+        # We use the polynomial approximation of degree 3
         # sigmoid(x) = 0.5 + 0.197 * x - 0.004 * x^3
         # from https://eprint.iacr.org/2018/462.pdf
-        poly_coeff = [0.5, 0.197, 0, -0.004] 
-        return enc_x.polyval([i*mult_coeff for i in poly_coeff]) # The use of mult_coeff allows us to multiply the encrypted result of the polynomial evaluation without homomorphique multiplication 
-    
+        poly_coeff = [0.5, 0.197, 0, -0.004]
+        return enc_x.polyval([i * mult_coeff for i in
+                              poly_coeff])  # The use of mult_coeff allows us to multiply the encrypted result of the polynomial evaluation without homomorphique multiplication
+
     @staticmethod
     def sigmoid_ne(enc_x, mult_coeff=1):
-        #We use the polynomial approximation of degree 3
+        # We use the polynomial approximation of degree 3
         # sigmoid(x) = 0.5 + 0.197 * x - 0.004 * x^3
         # from https://eprint.iacr.org/2018/462.pdf
-        poly_coeff = [0.5, 0.197, 0, -0.004] 
-        return (np.power(enc_x,3)*-0.004 + enc_x*0.197 + 0.5 )*mult_coeff 
+        poly_coeff = [0.5, 0.197, 0, -0.004]
+        return (np.power(enc_x, 3) * -0.004 + enc_x * 0.197 + 0.5) * mult_coeff
 
     def forward(self, vec, mult_coeff=1):
         if type(vec) == list:
@@ -104,50 +112,51 @@ class LogisticRegressionHE:
         return direction_weight, direction_bias
 
     def fit(self, X, Y, X_ne=None, Y_ne=None):
-        logger = logging.getLogger(__name__)
+
         while self.iter < self.num_iter:
-            
+
             self.weight = self.refresh(self.weight)
-            self.bias = self.refresh(self.bias)     # refreshing the weight and the bias to avoid scale out of bound
+            self.bias = self.refresh(
+                self.bias)  # refreshing the init_weight and the init_bias to avoid scale out of bound
             encrypted_prediction = self.forward(X)  # we can add batching later
-            prediction = self.forward_ne(X_ne)
             direction_weight, direction_bias = self.backward(X, encrypted_prediction, Y)
+            prediction = self.forward_ne(X_ne)
             ne_direction_weight, ne_direction_bias = self.backward_ne(X_ne, prediction, Y_ne)
             self.weight -= direction_weight
             self.weight_ne -= ne_direction_weight
             self.bias -= direction_bias
             self.bias_ne -= ne_direction_bias
-            self.iter += 1                
+            self.iter += 1
             if self.verbose and self.iter % 10 == 0:
-                logger.info("iteration number %d is starting" % self.iter)
+                self.logger.info("iteration number %d is starting" % self.iter)
+                self.loss_list.append(self.loss(X_ne, Y_ne))
+                self.logger.info('Loss : ' + str(self.loss_list[-1]) + ".")
                 if not self.safety:
-                   
-                    self.loss_list.append(self.loss(X_ne, Y_ne))
-                    logger.info('Loss : ' + str(self.loss_list[-1]) + ".")
 
+                    prediction = self.forward_ne(X_ne)
+                    ne_direction_weight, ne_direction_bias = self.backward_ne(X_ne, prediction, Y_ne)
                     self.direction_ne.append((ne_direction_weight, ne_direction_bias))
                     self.grad_norm.append((direction_weight.decrypt(), direction_bias.decrypt()))
-                    logger.debug(
+                    self.logger.debug(
                         "error %d" % (np.sum(
                             np.power((np.array(direction_weight.decrypt()) - ne_direction_weight), 2)) / np.sum(
                             np.power(ne_direction_weight, 2))))
-                    
-                    
+
     def loss(self, unenc_X, unenc_Y):
-        logger = logging.getLogger(__name__)
-        logger.critical("Security Leak : weighs to be decrypted")
-        
+
+        self.logger.critical("Security Leak : weighs to be decrypted")
+
         weight = self.weight.decrypt()
         bias = self.bias.decrypt()
-        
-        re = unenc_X.dot(weight) + bias #we use cross entropy loss function
-        pred = (np.float_power(re,3))*-0.004 + re*0.197 + 0.5  
+
+        re = unenc_X.dot(weight) + bias  # we use cross entropy loss function
+        pred = (np.float_power(re, 3)) * -0.004 + re * 0.197 + 0.5
         loss = -np.log(pred).dot(unenc_Y)
         loss -= (1 - np.array(unenc_Y)).T.dot(np.log(1 - pred))
-        loss += (self.reg_para / 2) * (np.array(weight).dot(weight) + np.float_power(bias,2))
-                                       
-        return np.round(loss[0],3)
-        
+        loss += (self.reg_para / 2) * (np.array(weight).dot(weight) + np.float_power(bias, 2))
+
+        return np.round(loss[0], 3)
+
     def predict(self, X):
         return self.forward(X)
 
@@ -157,8 +166,6 @@ class LogisticRegressionHE:
         for i in range(1, len(X_test)):
             err += np.float(np.abs(Y_test[i] - prediction[i]) < 0.5)
         return np.mean(err)
-
-  
 
     def __call__(self, *args, **kwargs):
         return self.forward(*args, **kwargs)

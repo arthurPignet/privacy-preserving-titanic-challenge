@@ -48,7 +48,7 @@ class LogisticRegression:
     def fit(self, X, Y, theta=None):
         if self.fit_intercept:
             X = self.__add_intercept(X)
-        # weight init
+        # init_weight init
         if theta is None:
             self.theta = np.zeros((X.shape[1], 1))
         else:
