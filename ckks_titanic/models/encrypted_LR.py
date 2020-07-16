@@ -48,10 +48,10 @@ class LogisticRegressionHE:
         return self.refresh_function(vector, **self.confidential_kwarg)
 
     def loss(self):
-        return self.loss_function(self.weight, self.bias, self.confidential_kwarg)
+        return self.loss_function(self.weight, self.bias, **self.confidential_kwarg)
 
     def accuracy(self, unencrypted_X=None, unencrypted_Y=None):
-        return self.accuracy_function(self.weight, self.bias, unencrypted_X, unencrypted_Y, self.confidential_kwarg)
+        return self.accuracy_function(self.weight, self.bias, unencrypted_X, unencrypted_Y, **self.confidential_kwarg)
 
     @staticmethod
     def sigmoid(enc_x, mult_coeff=1):
