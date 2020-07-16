@@ -16,9 +16,10 @@ class LogisticRegressionHE:
                  lr=1,
                  num_iter=100,
                  reg_para=0.5,
-                 verbose=False,
+                 verbose=-1,
                  safety=False,
                  ):
+        #TODO doc
         self.logger = logging.getLogger(__name__)
 
         self.refresh_function = refresh_function
@@ -127,7 +128,7 @@ class LogisticRegressionHE:
             self.bias -= direction_bias
             self.bias_ne -= ne_direction_bias
             self.iter += 1
-            if self.verbose and self.iter % 10 == 0:
+            if self.verbose > 0 and self.iter % self.verbose == 0:
                 self.logger.info("iteration number %d is starting" % self.iter)
                 self.loss_list.append(self.loss())
                 self.logger.info('Loss : ' + str(self.loss_list[-1]) + ".")
