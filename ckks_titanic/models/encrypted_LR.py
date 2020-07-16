@@ -17,7 +17,7 @@ class LogisticRegressionHE:
                  num_iter=100,
                  reg_para=0.5,
                  verbose=False,
-                 safety = False,
+                 safety=False,
                  ):
         self.logger = logging.getLogger(__name__)
 
@@ -49,8 +49,8 @@ class LogisticRegressionHE:
     def loss(self):
         return self.loss_function(self.weight, self.bias, self.confidential_kwarg)
 
-    def accuracy(self):
-        return self.accuracy_function(self.weight, self.bias, self.confidential_kwarg)
+    def accuracy(self, unencrypted_X=None, unencrypted_Y=None):
+        return self.accuracy_function(self.weight, self.bias, unencrypted_X, unencrypted_Y, self.confidential_kwarg)
 
     @staticmethod
     def sigmoid(enc_x, mult_coeff=1):
@@ -129,10 +129,9 @@ class LogisticRegressionHE:
             self.iter += 1
             if self.verbose and self.iter % 10 == 0:
                 self.logger.info("iteration number %d is starting" % self.iter)
-                self.loss_list.append(self.loss(X_ne, Y_ne))
+                self.loss_list.append(self.loss())
                 self.logger.info('Loss : ' + str(self.loss_list[-1]) + ".")
                 if not self.safety:
-
                     prediction = self.forward_ne(X_ne)
                     ne_direction_weight, ne_direction_bias = self.backward_ne(X_ne, prediction, Y_ne)
                     self.direction_ne.append((ne_direction_weight, ne_direction_bias))
@@ -142,30 +141,8 @@ class LogisticRegressionHE:
                             np.power((np.array(direction_weight.decrypt()) - ne_direction_weight), 2)) / np.sum(
                             np.power(ne_direction_weight, 2))))
 
-    def loss(self, unenc_X, unenc_Y):
-
-        self.logger.critical("Security Leak : weighs to be decrypted")
-
-        weight = self.weight.decrypt()
-        bias = self.bias.decrypt()
-
-        re = unenc_X.dot(weight) + bias  # we use cross entropy loss function
-        pred = (np.float_power(re, 3)) * -0.004 + re * 0.197 + 0.5
-        loss = -np.log(pred).dot(unenc_Y)
-        loss -= (1 - np.array(unenc_Y)).T.dot(np.log(1 - pred))
-        loss += (self.reg_para / 2) * (np.array(weight).dot(weight) + np.float_power(bias, 2))
-
-        return np.round(loss[0], 3)
-
     def predict(self, X):
         return self.forward(X)
-
-    def plain_accuracy(self, X_test, Y_test):
-        prediction = self.forward(X_test)
-        err = Y_test[0] - prediction[0]
-        for i in range(1, len(X_test)):
-            err += np.float(np.abs(Y_test[i] - prediction[i]) < 0.5)
-        return np.mean(err)
 
     def __call__(self, *args, **kwargs):
         return self.forward(*args, **kwargs)
