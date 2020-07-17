@@ -3,10 +3,10 @@ import logging
 import numpy as np
 
 
-class LogisticRegressionHE:
+class LogisticRegression:
     """
-        Model of logistic regression, performed on encrypted data.
-        It use homomorphic encryption, especially the CKKS scheme implemented in tenSEAL
+        Model of logistic regression, performed on unencrypted data.
+        It aim to be a reference model, to compare with encrypted models
 
     """
 
