@@ -68,7 +68,7 @@ class LogisticRegression:
         loss = -np.log(prediction).dot(Y)
         loss -= (1 - np.array(Y)).T.dot(np.log(1 - prediction))
         loss += (self.reg_para / 2) * (np.array(self.weight).dot(self.weight) + np.float_power(self.bias, 2))
-        return loss
+        return loss[0]
 
     def accuracy(self, X, Y):
         """
