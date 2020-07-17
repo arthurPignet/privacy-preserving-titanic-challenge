@@ -3,10 +3,10 @@ import logging
 import numpy as np
 
 
-class LogisticRegressionHE:
+class LogisticRegression:
     """
-        Model of logistic regression, performed on encrypted data.
-        It use homomorphic encryption, especially the CKKS scheme implemented in tenSEAL
+        Model of logistic regression, performed on unencrypted data.
+        It aim to be a reference model, to compare with encrypted models
 
     """
 
@@ -103,10 +103,10 @@ class LogisticRegressionHE:
         """
         if type(vec) == list:
             temp = [i.dot(self.weight) + self.bias for i in vec]
-            return [LogisticRegressionHE.sigmoid(i, mult_coeff=mult_coeff) for i in temp]
+            return [LogisticRegression.sigmoid(i, mult_coeff=mult_coeff) for i in temp]
         else:
             res = vec.dot(self.weight)
-            return LogisticRegressionHE.sigmoid(res, mult_coeff=mult_coeff)
+            return LogisticRegression.sigmoid(res, mult_coeff=mult_coeff)
 
     def backward(self, X, predictions, Y):
         """
