@@ -4,6 +4,11 @@ import numpy as np
 
 
 class LogisticRegressionHE:
+    """
+        Model of logistic regression, performed on encrypted data, using homomorphic encryption, especially the CKKS scheme implemented in tenSEAL
+
+    """
+
     def __init__(self,
                  init_weight,
                  init_bias,
@@ -14,12 +19,31 @@ class LogisticRegressionHE:
                  loss=None,
                  accuracy=None,
                  lr=1,
-                 num_iter=100,
+                 max_epoch=100,
                  reg_para=0.5,
                  verbose=-1,
                  safety=False,
                  ):
-        # TODO doc
+        """
+
+            Constructor
+
+            :param init_weight: CKKS vector. Initial weight
+            :param init_bias: CKKS vector. Initial weight
+            :param (Optional) weight_ne: numpy array. Initial unencrypted weight : Needed when safety is set to false, to compute the relative error between the homomorph gradient and the classic gradient
+            :param (Optional) bias_ne: numpy array. Initial unencrypted bias. Needed when safety is set to false, to compute the relative error between the homomorph gradient and the classic gradient
+            :param refresh_function: function. Refresh ciphertext
+            :param confidential_kwarg: dict. Will be passed as **kwarg to refresh, loss and accuracy functions. Contain confidential data which are needed by those functions.
+            :param loss: function. Compute cross entropy loss
+            :param accuracy: function. Compute accuracy
+            :param lr: float. learning rate
+            :param max_epoch: int. number of epoch to be performed
+            :param reg_para: float. regularization parameter
+            :param verbose: int. number of epoch were the loss (and the error if safety is set to False) is not computed, nor printed. Every <verbose> epoch, the loss (and error) will be logged
+            :param safety: boolean. If True, the protocol is as secure as refresh, loss and accuracy functions are. The unencrypted data are not necessary, as the error will not be computed.
+
+
+        """
         self.logger = logging.getLogger(__name__)
 
         self.refresh_function = refresh_function
@@ -31,7 +55,7 @@ class LogisticRegressionHE:
         self.safety = safety
 
         self.iter = 0
-        self.num_iter = num_iter
+        self.num_iter = max_epoch
         self.reg_para = reg_para
         self.lr = lr
 
@@ -44,34 +68,67 @@ class LogisticRegressionHE:
         self.bias = init_bias
 
     def refresh(self, vector):
+        """
+            The method refresh the depth of a ciphertext. It call the refresh function which aims to refresh ciphertext by preserving privacy
+            :param vector: CKKS vector, ciphertext
+            :return: refreshed CKKS vector
+        """
         return self.refresh_function(vector, **self.confidential_kwarg)
 
     def loss(self):
+        """
+            This method compute the loss by getting it from the loss_function, which aims to compute loss by preserving private.
+            :return:
+            loss : float
+        """
         return self.loss_function(self.weight, self.bias, self.reg_para, **self.confidential_kwarg)
 
     def accuracy(self, unencrypted_X=None, unencrypted_Y=None):
+        """
+            This method compute the accuracy by getting it from the accuracy_function, which aims to compute accuracy by preserving
+            :param unencrypted_X: samples of the data on which the accuracy will be computed
+            :param unencrypted_Y: labels of the data on which the accuracy will be computed
+            :return: accuracy
+        """
         return self.accuracy_function(self.weight, self.bias, prior_unencrypted_X=unencrypted_X,
                                       prior_unencrypted_Y=unencrypted_Y, **self.confidential_kwarg)
 
     @staticmethod
     def sigmoid(enc_x, mult_coeff=1):
-        # We use the polynomial approximation of degree 3
-        # sigmoid(x) = 0.5 + 0.197 * x - 0.004 * x^3
-        # from https://eprint.iacr.org/2018/462.pdf
-        # Therefore the use of mult_coeff allows us to multiply the encrypted result of the polynomial evaluation
-        # without homomorph multiplication
+        """
+            Sigmoid implementation
+            We use the polynomial approximation of degree 3
+            sigmoid(x) = 0.5 + 0.197 * x - 0.004 * x^3
+            from https://eprint.iacr.org/2018/462.pdf
 
+            :param enc_x:
+            :param mult_coeff: The return is equivalent to sigmoid(x) * mult_coeff, but save one homomorph multiplication
+            :return: CKKS vector (result of sigmoid(x))
+        """
         poly_coeff = [0.5, 0.197, 0, -0.004]
         return enc_x.polyval([i * mult_coeff for i in poly_coeff])
 
     @staticmethod
     def sigmoid_ne(enc_x, mult_coeff=1):
-        # We use the polynomial approximation of degree 3
-        # sigmoid(x) = 0.5 + 0.197 * x - 0.004 * x^3
-        # from https://eprint.iacr.org/2018/462.pdf
+        """
+            Sigmoid implementation
+            We use the polynomial approximation of degree 3
+            sigmoid(x) = 0.5 + 0.197 * x - 0.004 * x^3
+            from https://eprint.iacr.org/2018/462.pdf
+
+            :param enc_x:
+            :param mult_coeff: The return is equivalent to sigmoid(x) * mult_coeff, but save one homomorph multiplication
+            :return: CKKS vector (result of sigmoid(x))
+        """
         return (np.power(enc_x, 3) * -0.004 + enc_x * 0.197 + 0.5) * mult_coeff
 
     def forward(self, vec, mult_coeff=1):
+        """
+            Compute forward propagation on a CKKS vector (or a list of CKKS vectors)
+            :param vec: CKKS vector or list of CKKS vector on which we want to make predictions (ie forward propagation
+            :param mult_coeff: The return is equivalent to forward(x) * mult_coeff, but save one homomorph multiplication
+            :return: encrypted prediction or list of encrypted predictions
+        """
         if type(vec) == list:
             temp = [i.dot(self.weight) + self.bias for i in vec]
             return [LogisticRegressionHE.sigmoid(i, mult_coeff=mult_coeff) for i in temp]
@@ -80,6 +137,12 @@ class LogisticRegressionHE:
             return LogisticRegressionHE.sigmoid(res, mult_coeff=mult_coeff)
 
     def forward_ne(self, vec, mult_coeff=1):
+        """
+            Compute forward propagation on plaintext (or a list of plaintext)
+            :param vec: plaintext or list of plaintext on which we want to make predictions (ie forward propagation
+            :param mult_coeff: the result will be
+            :return: prediction or list of predictions
+        """
         if type(vec) == list:
             temp = [i.dot(self.weight) + self.bias for i in vec]
             return [LogisticRegressionHE.sigmoid_ne(i, mult_coeff=mult_coeff) for i in temp]
@@ -88,6 +151,13 @@ class LogisticRegressionHE:
             return LogisticRegressionHE.sigmoid_ne(res, mult_coeff=mult_coeff)
 
     def backward(self, X, predictions, Y):
+        """
+            Compute the backpropagation on a given encrypted batch
+            :param X: list of encrypted (CKKS vectors). Features of the data on which the gradient will be computed (backpropagation)
+            :param predictions: list of encrypted CKKS vectors. Label predictions (forward propagation) on the data on which the gradient will be computed (backpropagation)
+            :param Y: list of encrypted CKKS vectors. Label of the data on which the gradient will be computed (backpropagation)
+            :return: CKKS vector. Encrypted gradient
+        """
         inv_n = 1. / len(Y)
         err = predictions[0] - Y[0]
         direction_weight = X[0] * err
@@ -101,6 +171,13 @@ class LogisticRegressionHE:
         return direction_weight, direction_bias
 
     def backward_ne(self, X, predictions, Y):
+        """
+            Compute the backpropagation on a given batch
+            :param X: list of vectors. Features of the data on which the gradient will be computed (backpropagation)
+            :param predictions: np.array of prediction. Label predictions (forward propagation) on the data on which the gradient will be computed (backpropagation)
+            :param Y: np.array of label. Label of the data on which the gradient will be computed (backpropagation)
+            :return: np.array : gradient
+        """
         inv_n = 1. / len(Y)
         err = predictions[0] - Y[0]
         direction_weight = X[0] * err
@@ -114,7 +191,15 @@ class LogisticRegressionHE:
         return direction_weight, direction_bias
 
     def fit(self, X, Y, X_ne=None, Y_ne=None):
+        """
+        Train the model over encrypted data.
+        Unencrypted data can be provided, this is not safe, but can be useful for debug and monitoring
 
+        :param X: list of CKKS vectors: encrypted samples (train set)
+        :param Y: list of CKKS vectors: encrypted labels (train set)
+        :param (Optional) X_ne: np.array: samples (train set)
+        :param (Optional) Y_ne: np.array: labels (train set)
+        """
         while self.iter < self.num_iter:
 
             self.weight = self.refresh(self.weight)
@@ -146,6 +231,11 @@ class LogisticRegressionHE:
             self.iter += 1
 
     def predict(self, X):
+        """
+            Use the model to predict a label.
+            :param X: encrypted CKKS vector
+            :return: encrypted prediction
+        """
         return self.forward(X)
 
     def __call__(self, *args, **kwargs):
