@@ -160,25 +160,6 @@ class LogisticRegressionHE:
             direction_weight, direction_bias = self.backward(X, encrypted_prediction, Y)
             self.bias -= direction_bias
             self.weight -= direction_weight
-<<<<<<< HEAD
-            # unencrypted gradient descent
-            if self.verbose > 0:
-                unencrypted_prediction = self.forward_ne(X_ne)
-                ne_direction_weight, ne_direction_bias = self.backward_ne(X_ne, unencrypted_prediction, Y_ne)
-                self.weight_ne -= ne_direction_weight
-                self.bias_ne -= ne_direction_bias
-                if self.iter % self.verbose == 0:
-                    self.logger.info("iteration number %d " % (self.iter + 1))
-                    self.loss_list.append(self.loss())
-                    self.logger.info('Loss : ' + str(self.loss_list[-1]) + ".")
-                    if not self.safety:
-                        err = (np.sum(
-                            np.power((np.array(direction_weight.decrypt()) - ne_direction_weight), 2)) /
-                               np.sum(np.power(ne_direction_weight, 2)))
-                        self.error.append(err)
-                        self.logger.info(
-                            "error %d" % self.error[-1])
-=======
 
             if self.verbose > 0 and self.iter % self.verbose == 0:
                 self.logger.info("iteration number %d is starting" % (self.iter + 1))
@@ -187,7 +168,6 @@ class LogisticRegressionHE:
             if self.save_weight > 0 and self.iter % self.save_weight == 0:
                 self.weight_list.append(self.weight)
                 self.bias_list.append(self.bias)
->>>>>>> ae2d33cf9b76d99004b2b10739a2f215ebb09eb4
 
             self.iter += 1
 
