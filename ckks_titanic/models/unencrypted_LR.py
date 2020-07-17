@@ -143,13 +143,14 @@ class LogisticRegressionHE:
             self.bias -= direction_bias
             self.weight -= direction_weight
 
-            if self.iter % self.verbose == 0:
+            if self.verbose > 0 and self.iter % self.verbose == 0:
                 self.logger.info("iteration number %d is starting" % (self.iter + 1))
                 self.loss_list.append(self.loss(X, Y))
                 self.logger.info('Loss : ' + str(self.loss_list[-1]) + ".")
-            if self.iter % self.save_weight == 0:
+            if self.save_weight > 0 and self.iter % self.save_weight == 0:
                 self.weight_list.append(self.weight)
                 self.bias_list.append(self.bias)
+
             self.iter += 1
 
     def predict(self, X):
