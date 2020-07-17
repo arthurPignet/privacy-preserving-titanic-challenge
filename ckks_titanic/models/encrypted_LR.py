@@ -144,7 +144,6 @@ class LogisticRegressionHE:
     def fit(self, X, Y):
         """
         Train the model over encrypted data.
-        Unencrypted data can be provided, this is not safe, but can be useful for debug and monitoring
 
         :param X: list of CKKS vectors: encrypted samples (train set)
         :param Y: list of CKKS vectors: encrypted labels (train set)
