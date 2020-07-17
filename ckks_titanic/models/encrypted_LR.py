@@ -132,7 +132,7 @@ class LogisticRegressionHE:
                 self.weight_ne -= ne_direction_weight
                 self.bias_ne -= ne_direction_bias
                 if self.iter % self.verbose == 0:
-                    self.logger.info("iteration number %d is starting" % (self.iter + 1))
+                    self.logger.info("iteration number %d " % (self.iter + 1))
                     self.loss_list.append(self.loss())
                     self.logger.info('Loss : ' + str(self.loss_list[-1]) + ".")
                     if not self.safety:
