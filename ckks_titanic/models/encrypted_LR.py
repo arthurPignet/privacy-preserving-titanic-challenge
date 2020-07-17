@@ -140,7 +140,7 @@ class LogisticRegressionHE:
                             np.power((np.array(direction_weight.decrypt()) - ne_direction_weight), 2)) /
                                np.sum(np.power(ne_direction_weight, 2)))
                         self.error.append(err)
-                        self.logger.debug(
+                        self.logger.info(
                             "error %d" % self.error[-1])
 
             self.iter += 1
