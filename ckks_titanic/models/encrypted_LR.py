@@ -77,8 +77,8 @@ class LogisticRegressionHE:
         enc_prediction = self.forward(X)
         res = (self.reg_para / 2) * (self.weight.dot(self.weight) + self.bias * self.bias)
         for i in range(len(enc_prediction)):
-            res += Y[i] * self.__log(enc_prediction[i])
-            res += (1 - Y[i]) * self.__log(1 - enc_prediction[i])
+            res -= Y[i] * self.__log(enc_prediction[i])
+            res -= (1 - Y[i]) * self.__log(1 - enc_prediction[i])
         return res
 
     def accuracy(self, unencrypted_X=None, unencrypted_Y=None):
