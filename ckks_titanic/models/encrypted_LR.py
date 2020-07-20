@@ -72,6 +72,8 @@ class LogisticRegressionHE:
         return self.refresh_function(vector, **self.confidential_kwarg)
 
     def loss(self, X, Y):
+        self.weight = self.refresh(self.weight)
+        self.bias = self.refresh(self.bias)
         enc_prediction = self.forward(X)
         res = (self.reg_para / 2) * (self.weight.dot(self.weight) + self.bias * self.bias)
         for i in range(len(enc_prediction)):
