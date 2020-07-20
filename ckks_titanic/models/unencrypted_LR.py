@@ -148,8 +148,8 @@ class LogisticRegression:
                 self.loss_list.append(self.loss(X, Y))
                 self.logger.info('Loss : ' + str(self.loss_list[-1]) + ".")
             if self.save_weight > 0 and self.iter % self.save_weight == 0:
-                self.weight_list.append(self.weight)
-                self.bias_list.append(self.bias)
+                self.weight_list.append(self.weight.copy())
+                self.bias_list.append(self.bias.copy())
 
             self.iter += 1
 
