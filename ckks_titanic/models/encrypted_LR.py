@@ -12,7 +12,6 @@ class LogisticRegressionHE:
                  init_bias,
                  refresh_function,
                  confidential_kwarg,
-                 loss=None,
                  accuracy=None,
                  lr=1,
                  max_epoch=100,
@@ -29,7 +28,6 @@ class LogisticRegressionHE:
             :param init_bias: CKKS vector. Initial weight
             :param refresh_function: function. Refresh ciphertext
             :param confidential_kwarg: dict. Will be passed as **kwarg to refresh, loss and accuracy functions. Contain confidential data which are needed by those functions.
-            :param loss: function. Compute cross entropy loss
             :param accuracy: function. Compute accuracy
             :param lr: float. learning rate
             :param max_epoch: int. number of epoch to be performed
@@ -47,7 +45,6 @@ class LogisticRegressionHE:
 
         self.refresh_function = refresh_function
         self.confidential_kwarg = confidential_kwarg
-        self.loss_function = loss
         self.accuracy_function = accuracy
 
         self.verbose = verbose
@@ -74,13 +71,13 @@ class LogisticRegressionHE:
         """
         return self.refresh_function(vector, **self.confidential_kwarg)
 
-    def loss(self):
-        """
-            This method compute the loss by getting it from the loss_function, which aims to compute loss by preserving private.
-            :return:
-            loss : float
-        """
-        return self.loss_function(self.weight, self.bias, self.reg_para, **self.confidential_kwarg)
+    def loss(self, X, Y):
+        enc_prediction = self.forward(X)
+        res = (self.reg_para / 2) * (self.weight.dot(self.weight) + self.bias * self.bias)
+        for i in range(len(enc_prediction)):
+            res += Y[i] * self.__log(enc_prediction[i])
+            res += (1 - Y[i]) * self.__log(1 - enc_prediction[i])
+        return res
 
     def accuracy(self, unencrypted_X=None, unencrypted_Y=None):
         """
@@ -105,6 +102,11 @@ class LogisticRegressionHE:
             :return: CKKS vector (result of sigmoid(x))
         """
         poly_coeff = [0.5, 0.197, 0, -0.004]
+        return enc_x.polyval([i * mult_coeff for i in poly_coeff])
+
+    @staticmethod
+    def __log(enc_x, mult_coeff=1):
+        poly_coeff = [-3.69404813, 13.30907268, -19.06853265, 9.63445963]
         return enc_x.polyval([i * mult_coeff for i in poly_coeff])
 
     def forward(self, vec, mult_coeff=1):
