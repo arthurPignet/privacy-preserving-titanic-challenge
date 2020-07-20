@@ -164,7 +164,7 @@ class LogisticRegressionHE:
 
             if self.verbose > 0 and self.iter % self.verbose == 0:
                 self.logger.info("iteration number %d is starting" % (self.iter + 1))
-                self.loss_list.append(self.loss())
+                self.loss_list.append(self.loss(X,Y))
                 self.logger.info('Loss : ' + str(self.loss_list[-1]) + ".")
             if self.save_weight > 0 and self.iter % self.save_weight == 0:
                 self.weight_list.append(self.weight)
