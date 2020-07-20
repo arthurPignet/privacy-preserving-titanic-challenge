@@ -71,10 +71,9 @@ class LogisticRegressionHE:
         """
         return self.refresh_function(vector, **self.confidential_kwarg)
 
-    def loss(self, X, Y):
+    def loss(self, Y, enc_prediction):
         self.weight = self.refresh(self.weight)
         self.bias = self.refresh(self.bias)
-        enc_prediction = self.forward(X)
         res = (self.reg_para / 2) * (self.weight.dot(self.weight) + self.bias * self.bias)
         for i in range(len(enc_prediction)):
             res -= Y[i] * self.__log(enc_prediction[i])
@@ -166,7 +165,7 @@ class LogisticRegressionHE:
 
             if self.verbose > 0 and self.iter % self.verbose == 0:
                 self.logger.info("iteration number %d is starting" % (self.iter + 1))
-                self.loss_list.append(self.loss(X,Y))
+                self.loss_list.append(self.loss(Y,encrypted_prediction))
                 self.logger.info('Loss : ' + str(self.loss_list[-1]) + ".")
             if self.save_weight > 0 and self.iter % self.save_weight == 0:
                 self.weight_list.append(self.weight)
