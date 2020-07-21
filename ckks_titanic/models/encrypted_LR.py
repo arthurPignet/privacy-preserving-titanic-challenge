@@ -71,13 +71,32 @@ class LogisticRegressionHE:
         """
         return self.refresh_function(vector, **self.confidential_kwarg)
 
-    def loss(self, Y, enc_prediction):
+    def loss(self, Y, enc_predictions):
+         """
+            This function is here to homomoprhically estimate the cross entropy loss 
+            
+            1-NOTE : this function could be parallelized, as we do not need the result for the next epoch. 
+
+            :parameters 
+            ------------
+
+            self : model
+            Y : encrypted labels of the dataset on which the loss will be computed
+            enc_predictions : encrypted model predictions on the dataset on which the loss will be computed
+                              One can denote that the forward propagation (predictions) has to be done before. 
+            :returns 
+            ------------
+
+            loss : float (rounded to 3 digits)
+
+
+        """
         self.weight = self.refresh(self.weight)
         self.bias = self.refresh(self.bias)
         res = (self.reg_para / 2) * (self.weight.dot(self.weight) + self.bias * self.bias)
-        for i in range(len(enc_prediction)):
-            res -= Y[i] * self.__log(enc_prediction[i])
-            res -= (1 - Y[i]) * self.__log(1 - enc_prediction[i])
+        for i in range(len(enc_predictions)):
+            res -= Y[i] * self.__log(enc_predictions[i])
+            res -= (1 - Y[i]) * self.__log(1 - enc_predictions[i])
         return res
 
     def accuracy(self, unencrypted_X=None, unencrypted_Y=None):
