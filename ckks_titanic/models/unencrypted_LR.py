@@ -55,8 +55,8 @@ class LogisticRegression:
             self.bias_list = []
         if verbose > 0:
             self.loss_list = []
-        self.weight = init_weight
-        self.bias = init_bias
+        self.weight = init_weight.copy()
+        self.bias = init_bias.copy()
 
     def loss(self, X, Y):
         """
@@ -71,7 +71,7 @@ class LogisticRegression:
         loss = -np.log(prediction).dot(Y)
         loss -= (1 - np.array(Y)).T.dot(np.log(1 - prediction))
         loss += (self.reg_para / 2) * (np.array(self.weight).dot(self.weight) + np.float_power(self.bias, 2))
-        return loss[0]
+        return loss[0]/len(Y)
 
     def accuracy(self, X, Y):
         """
@@ -136,7 +136,7 @@ class LogisticRegression:
 
             return grad_weight, grad_bias
 
-    def __forward_backward_wrapper(self, arg):
+    def _forward_backward_wrapper(self, arg):
         """
         Wrapper for forward_backward, which expands the parameter tuple to forward_backward
         :param arg: Tuple, (X,Y) with X standing for features of the data on which predictions will be made, (forward propagation) and then the gradient will be computed (backpropagation)
@@ -155,7 +155,8 @@ class LogisticRegression:
 
         """
         prediction = self.forward(X, Y)
-        return self.backward(X, prediction, Y), prediction
+        grads = self.backward(X, prediction, Y)
+        return grads[0], grads[1], prediction
 
     def fit(self, X, Y):
         """
@@ -169,18 +170,15 @@ class LogisticRegression:
         inv_n = (1 / len(Y))
         while self.iter < self.num_iter:
 
-            # refreshing the init_weight and the init_bias to avoid scale out of bound
-            self.weight = self.refresh(self.weight)
-            self.bias = self.refresh(self.bias)
-
             process = multiprocessing.Pool(processes=self.n_jobs)  # can be done while waiting for the refreshed weight
-            directions = process.map_async(self.__forward_backward_wrapper, batches)
+            directions = process.map_async(self._forward_backward_wrapper, batches)
             process.close()
             process.join()
-            direction_weight, direction_bias = 0, 0
+
+            direction_weight, direction_bias= 0, 0
             encrypted_predictions = []
 
-            for batch_gradient_weight, batch_gradient_bias, prediction in directions.get():
+            for batch_gradient_weight, batch_gradient_bias, prediction in res:
                 direction_weight += batch_gradient_weight
                 direction_bias += batch_gradient_bias
                 encrypted_predictions.append(prediction)
@@ -188,11 +186,7 @@ class LogisticRegression:
             self.weight -= (direction_weight * (inv_n * self.lr)) + (
                     self.weight * (inv_n * self.lr * self.reg_para))
             self.bias -= direction_bias * (inv_n * self.lr)
-            prediction = self.forward(X)  # we can add batching later
-            direction_weight, direction_bias = self.backward(X, prediction, Y)
-            self.bias -= direction_bias
-            self.weight -= direction_weight
-
+            
             if self.verbose > 0 and self.iter % self.verbose == 0:
                 self.logger.info("iteration number %d is starting" % (self.iter + 1))
                 self.loss_list.append(self.loss(X, Y))
