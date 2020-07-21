@@ -1,4 +1,5 @@
 import logging
+import multiprocessing
 
 import numpy as np
 
@@ -16,6 +17,7 @@ class LogisticRegression:
                  lr=1,
                  max_epoch=100,
                  reg_para=0.5,
+                 n_jobs=None,
                  verbose=-1,
                  save_weight=-1,
                  ):
@@ -38,6 +40,7 @@ class LogisticRegression:
                                 If set to -1, the weight will not be saved
             """
 
+        self.n_jobs = n_jobs
         self.logger = logging.getLogger(__name__)
 
         self.verbose = verbose
@@ -108,7 +111,8 @@ class LogisticRegression:
             res = vec.dot(self.weight)
             return LogisticRegression.sigmoid(res, mult_coeff=mult_coeff)
 
-    def backward(self, X, predictions, Y):
+    @staticmethod
+    def backward(X, predictions, Y):
         """
             Compute the backpropagation on a given batch
             :param X: list of vectors. Features of the data on which the gradient will be computed (backpropagation)
@@ -116,17 +120,42 @@ class LogisticRegression:
             :param Y: np.array of label. Label of the data on which the gradient will be computed (backpropagation)
             :return: np.array : gradient
         """
-        inv_n = 1. / len(Y)
-        err = predictions[0] - Y[0]
-        direction_weight = X[0] * err
-        direction_bias = err
-        for i in range(1, len(X)):
-            err = predictions[i] - Y[i]
-            direction_weight += X[i] * err
-            direction_bias += err
-        direction_weight = (direction_weight * (inv_n * self.lr)) + (self.weight * (inv_n * self.lr * self.reg_para))
-        direction_bias = direction_bias * (inv_n * self.lr)
-        return direction_weight, direction_bias
+        if type(X) == list:
+            err = predictions[0] - Y[0]
+            grad_weight = X[0] * err
+            grad_bias = err
+            for i in range(1, len(X)):
+                err = predictions[i] - Y[i]
+                grad_weight += X[i] * err
+                grad_bias += err
+            return grad_weight, grad_bias
+        else:
+            err = predictions - Y
+            grad_weight = X * err
+            grad_bias = err
+
+            return grad_weight, grad_bias
+
+    def __forward_backward_wrapper(self, arg):
+        """
+        Wrapper for forward_backward, which expands the parameter tuple to forward_backward
+        :param arg: Tuple, (X,Y) with X standing for features of the data on which predictions will be made, (forward propagation) and then the gradient will be computed (backpropagation)
+                                  and Y standing for label of the data on which the gradient will be computed (backpropagation)
+        :return:
+                Tuple with 3 vectors.  batch_gradient for weight and bias, and batch predictions.
+        """
+        return self.forward_backward(*arg)
+
+    def forward_backward(self, X, Y):
+        """
+        Perform forward propagation, and then backward propagation.
+        :param X:  Features of the data on which predictions will be made, (forward propagation) and then the gradient will be computed (backpropagation)
+        :param Y: . Label of the data on which the gradient will be computed (backpropagation)
+        :return: : Tuple with 3  vectors.  batch_gradient for weight and bias, and batch predictions.
+
+        """
+        prediction = self.forward(X, Y)
+        return self.backward(X, prediction, Y), prediction
 
     def fit(self, X, Y):
         """
@@ -136,8 +165,29 @@ class LogisticRegression:
         :param X: list of CKKS vectors: encrypted samples (train set)
         :param Y: list of CKKS vectors: encrypted labels (train set)
         """
+        batches = zip(X, Y)
+        inv_n = (1 / len(Y))
         while self.iter < self.num_iter:
 
+            # refreshing the init_weight and the init_bias to avoid scale out of bound
+            self.weight = self.refresh(self.weight)
+            self.bias = self.refresh(self.bias)
+
+            process = multiprocessing.Pool(processes=self.n_jobs)  # can be done while waiting for the refreshed weight
+            directions = process.map_async(self.__forward_backward_wrapper, batches)
+            process.close()
+            process.join()
+            direction_weight, direction_bias = 0, 0
+            encrypted_predictions = []
+
+            for batch_gradient_weight, batch_gradient_bias, prediction in directions.get():
+                direction_weight += batch_gradient_weight
+                direction_bias += batch_gradient_bias
+                encrypted_predictions.append(prediction)
+
+            self.weight -= (direction_weight * (inv_n * self.lr)) + (
+                    self.weight * (inv_n * self.lr * self.reg_para))
+            self.bias -= direction_bias * (inv_n * self.lr)
             prediction = self.forward(X)  # we can add batching later
             direction_weight, direction_bias = self.backward(X, prediction, Y)
             self.bias -= direction_bias
