@@ -1,4 +1,5 @@
 import logging
+import multiprocessing
 
 
 class LogisticRegressionHE:
@@ -18,6 +19,7 @@ class LogisticRegressionHE:
                  reg_para=0.5,
                  verbose=-1,
                  save_weight=-1,
+                 n_jobs=1
                  ):
         """
 
@@ -54,6 +56,7 @@ class LogisticRegressionHE:
         self.num_iter = max_epoch
         self.reg_para = reg_para
         self.lr = lr
+        self.n_jobs = n_jobs
 
         if verbose > 0:
             self.loss_list = []
@@ -72,19 +75,20 @@ class LogisticRegressionHE:
         return self.refresh_function(vector, **self.confidential_kwarg)
 
     def loss(self, Y, enc_predictions):
-         """
-            This function is here to homomoprhically estimate the cross entropy loss 
-            
-            1-NOTE : this function could be parallelized, as we do not need the result for the next epoch. 
+        """
 
-            :parameters 
+            This function is here to homomorphically estimate the cross entropy loss
+
+            1-NOTE : this function could be parallelize, as we do not need the result for the next epoch.
+
+            :parameters
             ------------
 
             self : model
             Y : encrypted labels of the dataset on which the loss will be computed
             enc_predictions : encrypted model predictions on the dataset on which the loss will be computed
-                              One can denote that the forward propagation (predictions) has to be done before. 
-            :returns 
+                              One can denote that the forward propagation (predictions) has to be done before.
+            :returns
             ------------
 
             loss : float (rounded to 3 digits)
@@ -143,25 +147,51 @@ class LogisticRegressionHE:
             res = vec.dot(self.weight) + self.bias
             return LogisticRegressionHE.sigmoid(res, mult_coeff=mult_coeff)
 
-    def backward(self, X, predictions, Y):
+    @staticmethod
+    def backward(X, predictions, Y):
         """
             Compute the backpropagation on a given encrypted batch
             :param X: list of encrypted (CKKS vectors). Features of the data on which the gradient will be computed (backpropagation)
             :param predictions: list of encrypted CKKS vectors. Label predictions (forward propagation) on the data on which the gradient will be computed (backpropagation)
             :param Y: list of encrypted CKKS vectors. Label of the data on which the gradient will be computed (backpropagation)
-            :return: CKKS vector. Encrypted gradient
+            :return: Tuple of 2 CKKS vectors. Encrypted direction of descent for weight and bias"
         """
-        inv_n = 1. / len(Y)
-        err = predictions[0] - Y[0]
-        direction_weight = X[0] * err
-        direction_bias = err
-        for i in range(1, len(X)):
-            err = predictions[i] - Y[i]
-            direction_weight += X[i] * err
-            direction_bias += err
-        direction_weight = (direction_weight * (inv_n * self.lr)) + (self.weight * (inv_n * self.lr * self.reg_para))
-        direction_bias = direction_bias * (inv_n * self.lr)
-        return direction_weight, direction_bias
+        if type(X) == list:
+            err = predictions[0] - Y[0]
+            grad_weight = X[0] * err
+            grad_bias = err
+            for i in range(1, len(X)):
+                err = predictions[i] - Y[i]
+                grad_weight += X[i] * err
+                grad_bias += err
+            return grad_weight, grad_bias
+        else:
+            err = predictions - Y
+            grad_weight = X * err
+            grad_bias = err
+
+            return grad_weight, grad_bias
+
+    def __forward_backward_wrapper(self, arg):
+        """
+        Wrapper for forward_backward, which expands the parameter tuple to forward_backward
+        :param arg: Tuple, (X,Y) with X standing for a list of encrypted (CKKS vectors). Features of the data on which predictions will be made, (forward propagation) and then the gradient will be computed (backpropagation)
+                                  and Y standing for a list of encrypted CKKS vectors. Label of the data on which the gradient will be computed (backpropagation)
+        :return:
+                Tuple with 3 CKKS vectors. Encrypted batch_gradient for weight and bias, and batch predictions.
+        """
+        return self.forward_backward(*arg)
+
+    def forward_backward(self, X, Y):
+        """
+        Perform forward propagation, and then backward propagation.
+        :param X: list of encrypted (CKKS vectors). Features of the data on which predictions will be made, (forward propagation) and then the gradient will be computed (backpropagation)
+        :param Y: list of encrypted CKKS vectors. Label of the data on which the gradient will be computed (backpropagation)
+        :return: : Tuple with 3 CKKS vectors. Encrypted batch_gradient for weight and bias, and batch predictions.
+
+        """
+        prediction = self.forward(X, Y)
+        return self.backward(X, prediction, Y), prediction
 
     def fit(self, X, Y):
         """
@@ -171,20 +201,34 @@ class LogisticRegressionHE:
         :param Y: list of CKKS vectors: encrypted labels (train set)
 
         """
+
+        batches = zip(X, Y)
+        inv_n = (1 / len(Y))
         while self.iter < self.num_iter:
 
+            # refreshing the init_weight and the init_bias to avoid scale out of bound
             self.weight = self.refresh(self.weight)
             self.bias = self.refresh(self.bias)
-            # refreshing the init_weight and the init_bias to avoid scale out of bound
-            # encrypted gradient descent
-            encrypted_prediction = self.forward(X)  # we can add batching later
-            direction_weight, direction_bias = self.backward(X, encrypted_prediction, Y)
-            self.bias -= direction_bias
-            self.weight -= direction_weight
+
+            process = multiprocessing.Pool(processes=self.n_jobs)  # can be done while waiting for the refreshed weight
+            directions = process.map_async(self.__forward_backward_wrapper, batches)
+            process.close()
+            process.join()
+            direction_weight, direction_bias = 0, 0
+            encrypted_predictions = []
+
+            for batch_gradient_weight, batch_gradient_bias, prediction in directions.get():
+                direction_weight += batch_gradient_weight
+                direction_bias += batch_gradient_bias
+                encrypted_predictions.append(prediction)
+
+            self.weight -= (direction_weight * (inv_n * self.lr)) + (
+                    self.weight * (inv_n * self.lr * self.reg_para))
+            self.bias -= direction_bias * (inv_n * self.lr)
 
             if self.verbose > 0 and self.iter % self.verbose == 0:
                 self.logger.info("iteration number %d is starting" % (self.iter + 1))
-                self.loss_list.append(self.loss(Y,encrypted_prediction))
+                self.loss_list.append(self.loss(Y, encrypted_predictions))
                 self.logger.info('Loss : ' + str(self.loss_list[-1]) + ".")
             if self.save_weight > 0 and self.iter % self.save_weight == 0:
                 self.weight_list.append(self.weight)
