@@ -58,19 +58,19 @@ class LogisticRegression:
             self.true_loss_list = []
         self.weight = init_weight.copy()
         self.bias = init_bias.copy()
-    
+
     @staticmethod
     def _log(x, mult_coeff=1):
         poly_coeff = [-3.69404813, 13.30907268, -19.06853265, 9.63445963]
         res = 0
         for i in range(len(poly_coeff)):
-            res += poly_coeff[i]*np.power(x,i)
+            res += poly_coeff[i] * np.power(x, i) * mult_coeff
         return res
-    
+
     def loss(self, predictions, Y):
         """
             This method compute the cross entropy loss.
-            :param X: samples
+            :param predictions: precomputed predictions
             :param Y: labels
             :return: loss. float
 
@@ -80,14 +80,14 @@ class LogisticRegression:
         loss = loss - (1 - np.array(Y)).T.dot(self._log(1 - np.array(predictions)))
         loss = loss + ((self.reg_para / 2) * (np.array(self.weight).dot(self.weight) + np.float_power(self.bias, 2)))
         return loss
-    
+
     def true_loss(self, X, Y):
-        predictions = 1/ (1+ np.exp(-(X.dot(self.weight)+self.bias)))
+        predictions = 1 / (1 + np.exp(-(X.dot(self.weight) + self.bias)))
         loss = -np.log(predictions).T.dot(Y)
         loss = loss - (1 - np.array(Y)).T.dot(np.log(1 - np.array(predictions)))
         loss = loss + ((self.reg_para / 2) * (np.array(self.weight).dot(self.weight) + np.float_power(self.bias, 2)))
         return loss
-    
+
     def accuracy(self, X, Y):
         """
             This method compute the accuracy
@@ -123,7 +123,7 @@ class LogisticRegression:
             temp = [i.dot(self.weight) + self.bias for i in vec]
             return [LogisticRegression.sigmoid(i, mult_coeff=mult_coeff) for i in temp]
         else:
-            res = vec.dot(self.weight) +self.bias
+            res = vec.dot(self.weight) + self.bias
             return LogisticRegression.sigmoid(res, mult_coeff=mult_coeff)
 
     @staticmethod
@@ -182,30 +182,38 @@ class LogisticRegression:
         :param X: list of CKKS vectors: encrypted samples (train set)
         :param Y: list of CKKS vectors: encrypted labels (train set)
         """
-        self.batches = [(x,y) for x,y in zip(X, Y)] 
+        batches = [(x, y) for x, y in zip(X, Y)]
         inv_n = (1 / len(Y))
         while self.iter < self.num_iter:
 
-            process = multiprocessing.Pool(processes=self.n_jobs)  # can be done while waiting for the refreshed weight
-            directions = process.map_async(self._forward_backward_wrapper, self.batches)
-            direction_weight, direction_bias= 0, 0
-            predictions = []
-            process.close()
-            process.join()
+            try:
+                process = multiprocessing.Pool(
+                    processes=self.n_jobs)  # can be done while waiting for the refreshed weight
+                multiprocess_results = process.map_async(self._forward_backward_wrapper, batches)
+                process.close()
+                process.join()
+                direction_weight, direction_bias = 0, 0
+                predictions = []
+                directions = multiprocess_results.get()
+            except TypeError("Can't pickle"):
+                self.logger.warning("One tenseal object cannot be pickle, aborting use of multiprocessing.")
+                directions = [self._forward_backward_wrapper(i) for i in batches]
+                direction_weight, direction_bias = 0, 0
+                predictions = []
 
-            for batch_gradient_weight, batch_gradient_bias, prediction in directions.get():
+            for batch_gradient_weight, batch_gradient_bias, prediction in directions:
                 direction_weight += batch_gradient_weight
                 direction_bias += batch_gradient_bias
                 predictions.append(prediction)
-            direction_weight = (direction_weight * self.lr*inv_n) + (self.weight * ( self.lr * self.reg_para))
-            direction_bias =  direction_bias * self.lr*inv_n
-            
+            direction_weight = (direction_weight * self.lr * inv_n) + (self.weight * (self.lr * self.reg_para))
+            direction_bias = direction_bias * self.lr * inv_n
+
             self.weight -= direction_weight
-            self.bias -= direction_bias 
+            self.bias -= direction_bias
             if self.verbose > 0 and self.iter % self.verbose == 0:
                 self.logger.info("iteration number %d is starting" % (self.iter + 1))
                 self.loss_list.append(self.loss(predictions, Y))
-                self.true_loss_list.append(self.true_loss(X,Y))
+                self.true_loss_list.append(self.true_loss(X, Y))
                 self.logger.info('Loss : ' + str(self.loss_list[-1]) + ".")
             if self.save_weight > 0 and self.iter % self.save_weight == 0:
                 self.weight_list.append(self.weight.copy())

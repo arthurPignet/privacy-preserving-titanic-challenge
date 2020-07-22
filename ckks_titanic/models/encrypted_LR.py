@@ -100,9 +100,9 @@ class LogisticRegressionHE:
         inv_n = len(Y)
         res = (self.reg_para / 2) * (self.weight.dot(self.weight) + self.bias * self.bias)
         for i in range(len(enc_predictions)):
-            res -= Y[i] * self.__log(enc_predictions[i])
-            res -= (1 - Y[i]) * self.__log(1 - enc_predictions[i])
-        return res 
+            res -= Y[i] * self.__log(enc_predictions[i]) / inv_n
+            res -= (1 - Y[i]) * self.__log(1 - enc_predictions[i]) / inv_n
+        return res
 
     def accuracy(self, unencrypted_X=None, unencrypted_Y=None):
         """
@@ -173,7 +173,7 @@ class LogisticRegressionHE:
 
             return grad_weight, grad_bias
 
-    def __forward_backward_wrapper(self, arg):
+    def _forward_backward_wrapper(self, arg):
         """
         Wrapper for forward_backward, which expands the parameter tuple to forward_backward
         :param arg: Tuple, (X,Y) with X standing for a list of encrypted (CKKS vectors). Features of the data on which predictions will be made, (forward propagation) and then the gradient will be computed (backpropagation)
@@ -203,7 +203,7 @@ class LogisticRegressionHE:
 
         """
 
-        batches = [(x,y) for x,y in zip(X, Y)] 
+        batches = [(x, y) for x, y in zip(X, Y)]
         inv_n = (1 / len(Y))
         while self.iter < self.num_iter:
 
@@ -211,23 +211,30 @@ class LogisticRegressionHE:
             self.weight = self.refresh(self.weight)
             self.bias = self.refresh(self.bias)
 
-            process = multiprocessing.Pool(processes=self.n_jobs)  # can be done while waiting for the refreshed weight
-            directions = process.map_async(self.__forward_backward_wrapper, batches)
-            process.close()
-            process.join()
-            direction_weight, direction_bias = 0, 0
-            encrypted_predictions = []
+            try:
+                process = multiprocessing.Pool(processes=self.n_jobs)  # can be done while waiting for the refreshed weight
+                multiprocess_results = process.map_async(self._forward_backward_wrapper, batches)
+                process.close()
+                process.join()
+                direction_weight, direction_bias = 0, 0
+                encrypted_predictions = []
+                directions = multiprocess_results.get()
+            except TypeError("Can't pickle"):
+                self.logger.warning("One tenseal object cannot be pickle, aborting use of multiprocessing.")
+                directions = [self._forward_backward_wrapper(i) for i in batches]
+                direction_weight, direction_bias = 0, 0
+                encrypted_predictions = []
 
-            for batch_gradient_weight, batch_gradient_bias, prediction in directions.get():
+            for batch_gradient_weight, batch_gradient_bias, prediction in directions:
                 direction_weight += batch_gradient_weight
                 direction_bias += batch_gradient_bias
-                predictions.append(prediction)
-                
-            direction_weight = (direction_weight * self.lr*inv_n) + (self.weight * ( self.lr * self.reg_para))
-            direction_bias =  direction_bias * self.lr*inv_n
-            
+                encrypted_predictions.append(prediction)
+
+            direction_weight = (direction_weight * self.lr * inv_n) + (self.weight * (self.lr * self.reg_para))
+            direction_bias = direction_bias * self.lr * inv_n
+
             self.weight -= direction_weight
-            self.bias -= direction_bias 
+            self.bias -= direction_bias
 
             if self.verbose > 0 and self.iter % self.verbose == 0:
                 self.logger.info("iteration number %d is starting" % (self.iter + 1))
