@@ -230,8 +230,8 @@ class LogisticRegressionHE:
                 direction_bias += batch_gradient_bias
                 encrypted_predictions.append(prediction)
 
-            direction_weight = (direction_weight * self.lr * inv_n) + (self.weight * (self.lr * self.reg_para))
-            direction_bias = direction_bias * self.lr * inv_n
+            direction_weight = (direction_weight * self.lr * inv_n) + (self.weight * (self.lr * inv_n * self.reg_para))
+            direction_bias = direction_bias * self.lr * inv_n + (self.bias * (self.lr * inv_n * self.reg_para))
 
             self.weight -= direction_weight
             self.bias -= direction_bias
