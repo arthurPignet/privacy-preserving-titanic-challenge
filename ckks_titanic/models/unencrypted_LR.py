@@ -55,10 +55,19 @@ class LogisticRegression:
             self.bias_list = []
         if verbose > 0:
             self.loss_list = []
+            self.true_loss_list = []
         self.weight = init_weight.copy()
         self.bias = init_bias.copy()
-
-    def loss(self, X, Y):
+    
+    @staticmethod
+    def _log(x, mult_coeff=1):
+        poly_coeff = [-3.69404813, 13.30907268, -19.06853265, 9.63445963]
+        res = 0
+        for i in range(len(poly_coeff)):
+            res += poly_coeff[i]*np.power(x,i)
+        return res
+    
+    def loss(self, predictions, Y):
         """
             This method compute the cross entropy loss.
             :param X: samples
@@ -66,13 +75,19 @@ class LogisticRegression:
             :return: loss. float
 
         """
-        re = X.dot(self.weight) + self.bias  # we use cross entropy loss function
-        prediction = (np.float_power(re, 3)) * -0.004 + re * 0.197 + 0.5
-        loss = -np.log(prediction).dot(Y)
-        loss -= (1 - np.array(Y)).T.dot(np.log(1 - prediction))
-        loss += (self.reg_para / 2) * (np.array(self.weight).dot(self.weight) + np.float_power(self.bias, 2))
-        return loss[0]/len(Y)
-
+        predictions = np.array(predictions).reshape(Y.shape)
+        loss = -self._log(predictions).T.dot(Y)
+        loss = loss - (1 - np.array(Y)).T.dot(self._log(1 - np.array(predictions)))
+        loss = loss + ((self.reg_para / 2) * (np.array(self.weight).dot(self.weight) + np.float_power(self.bias, 2)))
+        return loss
+    
+    def true_loss(self, X, Y):
+        predictions = 1/ (1+ np.exp(-(X.dot(self.weight)+self.bias)))
+        loss = -np.log(predictions).T.dot(Y)
+        loss = loss - (1 - np.array(Y)).T.dot(np.log(1 - np.array(predictions)))
+        loss = loss + ((self.reg_para / 2) * (np.array(self.weight).dot(self.weight) + np.float_power(self.bias, 2)))
+        return loss/
+    
     def accuracy(self, X, Y):
         """
             This method compute the accuracy
@@ -108,7 +123,7 @@ class LogisticRegression:
             temp = [i.dot(self.weight) + self.bias for i in vec]
             return [LogisticRegression.sigmoid(i, mult_coeff=mult_coeff) for i in temp]
         else:
-            res = vec.dot(self.weight)
+            res = vec.dot(self.weight) +self.bias
             return LogisticRegression.sigmoid(res, mult_coeff=mult_coeff)
 
     @staticmethod
@@ -122,6 +137,7 @@ class LogisticRegression:
         """
         if type(X) == list:
             err = predictions[0] - Y[0]
+            print('LIST')
             grad_weight = X[0] * err
             grad_bias = err
             for i in range(1, len(X)):
@@ -154,7 +170,7 @@ class LogisticRegression:
         :return: : Tuple with 3  vectors.  batch_gradient for weight and bias, and batch predictions.
 
         """
-        prediction = self.forward(X, Y)
+        prediction = self.forward(X)
         grads = self.backward(X, prediction, Y)
         return grads[0], grads[1], prediction
 
@@ -172,24 +188,28 @@ class LogisticRegression:
 
             process = multiprocessing.Pool(processes=self.n_jobs)  # can be done while waiting for the refreshed weight
             directions = process.map_async(self._forward_backward_wrapper, batches)
+            direction_weight, direction_bias= 0, 0
+            predictions = []
             process.close()
             process.join()
 
-            direction_weight, direction_bias= 0, 0
-            encrypted_predictions = []
+            
 
-            for batch_gradient_weight, batch_gradient_bias, prediction in res:
+            for batch_gradient_weight, batch_gradient_bias, prediction in directions.get():
                 direction_weight += batch_gradient_weight
                 direction_bias += batch_gradient_bias
-                encrypted_predictions.append(prediction)
+                print(prediction)
+                predictions.append(prediction)
+                
 
-            self.weight -= (direction_weight * (inv_n * self.lr)) + (
-                    self.weight * (inv_n * self.lr * self.reg_para))
-            self.bias -= direction_bias * (inv_n * self.lr)
-            
+            self.weight -= (direction_weight * self.lr) + (self.weight * ( self.lr * self.reg_para))
+            self.bias -= direction_bias *  self.lr
+            print('predictions:')
+            print(predictions)
             if self.verbose > 0 and self.iter % self.verbose == 0:
                 self.logger.info("iteration number %d is starting" % (self.iter + 1))
-                self.loss_list.append(self.loss(X, Y))
+                self.loss_list.append(self.loss(predictions, Y))
+                self.true_loss_list.append(self.true_loss(X,Y))
                 self.logger.info('Loss : ' + str(self.loss_list[-1]) + ".")
             if self.save_weight > 0 and self.iter % self.save_weight == 0:
                 self.weight_list.append(self.weight.copy())
