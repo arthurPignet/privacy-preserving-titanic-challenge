@@ -102,7 +102,7 @@ class LogisticRegressionHE:
         for i in range(len(enc_predictions)):
             res -= Y[i] * self.__log(enc_predictions[i])
             res -= (1 - Y[i]) * self.__log(1 - enc_predictions[i])
-        return res *inv_n
+        return res 
 
     def accuracy(self, unencrypted_X=None, unencrypted_Y=None):
         """
@@ -203,7 +203,7 @@ class LogisticRegressionHE:
 
         """
 
-        batches = zip(X, Y)
+        batches = [(x,y) for x,y in zip(X, Y)] 
         inv_n = (1 / len(Y))
         while self.iter < self.num_iter:
 
@@ -221,11 +221,13 @@ class LogisticRegressionHE:
             for batch_gradient_weight, batch_gradient_bias, prediction in directions.get():
                 direction_weight += batch_gradient_weight
                 direction_bias += batch_gradient_bias
-                encrypted_predictions.append(prediction)
-
-            self.weight -= (direction_weight * (inv_n * self.lr)) + (
-                    self.weight * (inv_n * self.lr * self.reg_para))
-            self.bias -= direction_bias * (inv_n * self.lr)
+                predictions.append(prediction)
+                
+            direction_weight = (direction_weight * self.lr*inv_n) + (self.weight * ( self.lr * self.reg_para))
+            direction_bias =  direction_bias * self.lr*inv_n
+            
+            self.weight -= direction_weight
+            self.bias -= direction_bias 
 
             if self.verbose > 0 and self.iter % self.verbose == 0:
                 self.logger.info("iteration number %d is starting" % (self.iter + 1))

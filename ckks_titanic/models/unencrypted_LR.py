@@ -86,7 +86,7 @@ class LogisticRegression:
         loss = -np.log(predictions).T.dot(Y)
         loss = loss - (1 - np.array(Y)).T.dot(np.log(1 - np.array(predictions)))
         loss = loss + ((self.reg_para / 2) * (np.array(self.weight).dot(self.weight) + np.float_power(self.bias, 2)))
-        return loss/
+        return loss
     
     def accuracy(self, X, Y):
         """
@@ -182,30 +182,26 @@ class LogisticRegression:
         :param X: list of CKKS vectors: encrypted samples (train set)
         :param Y: list of CKKS vectors: encrypted labels (train set)
         """
-        batches = zip(X, Y)
+        self.batches = [(x,y) for x,y in zip(X, Y)] 
         inv_n = (1 / len(Y))
         while self.iter < self.num_iter:
 
             process = multiprocessing.Pool(processes=self.n_jobs)  # can be done while waiting for the refreshed weight
-            directions = process.map_async(self._forward_backward_wrapper, batches)
+            directions = process.map_async(self._forward_backward_wrapper, self.batches)
             direction_weight, direction_bias= 0, 0
             predictions = []
             process.close()
             process.join()
 
-            
-
             for batch_gradient_weight, batch_gradient_bias, prediction in directions.get():
                 direction_weight += batch_gradient_weight
                 direction_bias += batch_gradient_bias
-                print(prediction)
                 predictions.append(prediction)
-                
-
-            self.weight -= (direction_weight * self.lr) + (self.weight * ( self.lr * self.reg_para))
-            self.bias -= direction_bias *  self.lr
-            print('predictions:')
-            print(predictions)
+            direction_weight = (direction_weight * self.lr*inv_n) + (self.weight * ( self.lr * self.reg_para))
+            direction_bias =  direction_bias * self.lr*inv_n
+            
+            self.weight -= direction_weight
+            self.bias -= direction_bias 
             if self.verbose > 0 and self.iter % self.verbose == 0:
                 self.logger.info("iteration number %d is starting" % (self.iter + 1))
                 self.loss_list.append(self.loss(predictions, Y))
