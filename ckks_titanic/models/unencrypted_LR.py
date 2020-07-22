@@ -185,21 +185,22 @@ class LogisticRegression:
         batches = [(x, y) for x, y in zip(X, Y)]
         inv_n = (1 / len(Y))
         while self.iter < self.num_iter:
-
-            try:
-                process = multiprocessing.Pool(
-                    processes=self.n_jobs)  # can be done while waiting for the refreshed weight
-                multiprocess_results = process.map_async(self._forward_backward_wrapper, batches)
-                process.close()
-                process.join()
-                direction_weight, direction_bias = 0, 0
-                predictions = []
-                directions = multiprocess_results.get()
-            except:
-                self.logger.warning("One tenseal object cannot be pickle, aborting the use of multiprocessing.")
+            if self.n_jobs > 1:
+                try:
+                    process = multiprocessing.Pool(
+                        processes=self.n_jobs)  # can be done while waiting for the refreshed weight
+                    multiprocess_results = process.map_async(self._forward_backward_wrapper, batches)
+                    process.close()
+                    process.join()
+                    directions = multiprocess_results.get()
+                except:
+                    self.logger.warning("One tenseal object cannot be pickle, aborting the use of multiprocessing.")
+                    directions = [self._forward_backward_wrapper(i) for i in batches]
+            else:
                 directions = [self._forward_backward_wrapper(i) for i in batches]
-                direction_weight, direction_bias = 0, 0
-                predictions = []
+
+            direction_weight, direction_bias = 0, 0
+            predictions = []
 
             for batch_gradient_weight, batch_gradient_bias, prediction in directions:
                 direction_weight += batch_gradient_weight
@@ -210,6 +211,7 @@ class LogisticRegression:
 
             self.weight -= direction_weight
             self.bias -= direction_bias
+
             if self.verbose > 0 and self.iter % self.verbose == 0:
                 self.logger.info("iteration number %d is starting" % (self.iter + 1))
                 self.loss_list.append(self.loss(predictions, Y))
