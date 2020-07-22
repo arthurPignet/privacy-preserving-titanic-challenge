@@ -97,11 +97,11 @@ class LogisticRegressionHE:
         """
         self.weight = self.refresh(self.weight)
         self.bias = self.refresh(self.bias)
-        inv_n = len(Y)
+        inv_n = 1 / len(Y)
         res = (self.reg_para / 2) * (self.weight.dot(self.weight) + self.bias * self.bias)
         for i in range(len(enc_predictions)):
-            res -= Y[i] * self.__log(enc_predictions[i]) / inv_n
-            res -= (1 - Y[i]) * self.__log(1 - enc_predictions[i]) / inv_n
+            res -= Y[i] * self.__log(enc_predictions[i]) * inv_n
+            res -= (1 - Y[i]) * self.__log(1 - enc_predictions[i]) * inv_n
         return res
 
     def accuracy(self, unencrypted_X=None, unencrypted_Y=None):
@@ -191,8 +191,9 @@ class LogisticRegressionHE:
         :return: : Tuple with 3 CKKS vectors. Encrypted batch_gradient for weight and bias, and batch predictions.
 
         """
-        prediction = self.forward(X, Y)
-        return self.backward(X, prediction, Y), prediction
+        prediction = self.forward(X)
+        grads = self.backward(X, prediction, Y)
+        return grads[0], grads[1], prediction
 
     def fit(self, X, Y):
         """
@@ -212,15 +213,16 @@ class LogisticRegressionHE:
             self.bias = self.refresh(self.bias)
 
             try:
-                process = multiprocessing.Pool(processes=self.n_jobs)  # can be done while waiting for the refreshed weight
+                process = multiprocessing.Pool(
+                    processes=self.n_jobs)  # can be done while waiting for the refreshed weight
                 multiprocess_results = process.map_async(self._forward_backward_wrapper, batches)
                 process.close()
                 process.join()
                 direction_weight, direction_bias = 0, 0
                 encrypted_predictions = []
                 directions = multiprocess_results.get()
-            except TypeError("Can't pickle"):
-                self.logger.warning("One tenseal object cannot be pickle, aborting use of multiprocessing.")
+            except:
+                self.logger.warning("One tenseal object cannot be pickle, aborting the use of multiprocessing.")
                 directions = [self._forward_backward_wrapper(i) for i in batches]
                 direction_weight, direction_bias = 0, 0
                 encrypted_predictions = []

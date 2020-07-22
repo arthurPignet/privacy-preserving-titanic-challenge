@@ -195,8 +195,8 @@ class LogisticRegression:
                 direction_weight, direction_bias = 0, 0
                 predictions = []
                 directions = multiprocess_results.get()
-            except TypeError("Can't pickle"):
-                self.logger.warning("One tenseal object cannot be pickle, aborting use of multiprocessing.")
+            except:
+                self.logger.warning("One tenseal object cannot be pickle, aborting the use of multiprocessing.")
                 directions = [self._forward_backward_wrapper(i) for i in batches]
                 direction_weight, direction_bias = 0, 0
                 predictions = []
