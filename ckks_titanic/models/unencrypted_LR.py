@@ -213,7 +213,7 @@ class LogisticRegression:
             self.bias -= direction_bias
 
             if self.verbose > 0 and self.iter % self.verbose == 0:
-                self.logger.info("iteration number %d is starting" % (self.iter + 1))
+                self.logger.info("Just finished iteration number %d " % (self.iter + 1))
                 self.loss_list.append(self.loss(predictions, Y))
                 self.true_loss_list.append(self.true_loss(X, Y))
                 self.logger.info('Loss : ' + str(self.loss_list[-1]) + ".")
