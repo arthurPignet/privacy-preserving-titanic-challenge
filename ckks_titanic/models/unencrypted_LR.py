@@ -65,6 +65,10 @@ class LogisticRegression:
         self.weight = init_weight.copy()
         self.bias = init_bias.copy()
 
+    def refresh(self, x):
+        self.iter += 0
+        return x
+
     @staticmethod
     def _log(x, mult_coeff=1):
         poly_coeff = [-3.69404813, 13.30907268, -19.06853265, 9.63445963]
@@ -191,37 +195,15 @@ class LogisticRegression:
         batches = [(x, y) for x, y in zip(X, Y)]
         inv_n = (1 / len(Y))
 
-        if self.n_jobs > 1:
-            try:
-                process = multiprocessing.Pool(
-                    processes=self.n_jobs)  # can be done while waiting for the refreshed weight
-                multiprocess_results = process.map_async(self._forward_backward_wrapper, batches)
-                process.close()
-                process.join()
-                directions = multiprocess_results.get()
-            except:
-                self.logger.warning("One tenseal object cannot be pickle, aborting the use of multiprocessing.")
-                directions = [self._forward_backward_wrapper(i) for i in batches]
-        else:
-            directions = [self._forward_backward_wrapper(i) for i in batches]
-
-        direction_weight, direction_bias = 0, 0
-        predictions = []
-
-        for batch_gradient_weight, batch_gradient_bias, prediction in directions:
-            direction_weight += batch_gradient_weight
-            direction_bias += batch_gradient_bias
-            predictions.append(prediction)
-        velocity_w = (direction_weight * self.lr * inv_n) + (self.weight * (self.lr * inv_n * self.reg_para))
-        velocity_b = direction_bias * self.lr * inv_n + (self.bias * (self.lr * inv_n * self.reg_para))
+        velocity_w = self.weight
+        velocity_b = self.bias
 
         while self.iter < self.num_iter:
-            # refresh both v and theta
 
-            temp_weight = self.weight.copy()
-            temp_bias = self.bias.copy()
-            self.weight = self.weight + velocity_w*self.mr
-            self.bias = self.weight + velocity_b*self.mr
+            prev_weight = self.weight.copy()
+            prev_bias = self.bias.copy()
+            self.weight = velocity_w
+            self.bias = velocity_b
 
             if self.n_jobs > 1:
                 try:
@@ -244,14 +226,18 @@ class LogisticRegression:
                 direction_weight += batch_gradient_weight
                 direction_bias += batch_gradient_bias
                 predictions.append(prediction)
+
             direction_weight = (direction_weight * self.lr * inv_n) + (self.weight * (self.lr * inv_n * self.reg_para))
             direction_bias = direction_bias * self.lr * inv_n + (self.bias * (self.lr * inv_n * self.reg_para))
 
-            velocity_w = velocity_w*self.mr - direction_weight
-            velocity_b = velocity_b*self.mr - direction_bias
+            self.weight -= direction_weight
+            self.bias -= direction_bias
 
-            self.weight = temp_weight + velocity_w
-            self.bias -= temp_bias + velocity_b
+            self.weight = self.refresh(self.weight)
+            self.bias = self.refresh(self.bias)
+
+            velocity_w = self.weight + (self.weight - prev_weight) * self.mr
+            velocity_b = self.bias + (self.bias - prev_bias) * self.mr
 
             if self.verbose > 0 and self.iter % self.verbose == 0:
                 self.logger.info("Just finished iteration number %d " % (self.iter + 1))
