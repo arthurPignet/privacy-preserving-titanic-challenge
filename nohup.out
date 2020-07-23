@@ -223,3 +223,34 @@
 [I 15:41:25.028 LabApp] Saving file at /ckks_titanic/notebooks/2-ap-main.ipynb
 [I 15:43:25.225 LabApp] Saving file at /ckks_titanic/notebooks/2-ap-main.ipynb
 [I 15:45:25.433 LabApp] Saving file at /ckks_titanic/notebooks/2-ap-main.ipynb
+[I 15:47:25.651 LabApp] Saving file at /ckks_titanic/notebooks/2-ap-main.ipynb
+[I 15:49:25.916 LabApp] Saving file at /ckks_titanic/notebooks/2-ap-main.ipynb
+[I 15:51:26.072 LabApp] Saving file at /ckks_titanic/notebooks/2-ap-main.ipynb
+[I 15:53:26.274 LabApp] Saving file at /ckks_titanic/notebooks/2-ap-main.ipynb
+[I 15:55:26.489 LabApp] Saving file at /ckks_titanic/notebooks/2-ap-main.ipynb
+[I 16:00:16.628 LabApp] Saving file at /ckks_titanic/notebooks/2-ap-main.ipynb
+[I 16:06:12.928 LabApp] Starting buffering for 0250c6f6-c316-47b1-bf0e-314a8dbb77bd:e80dd462-8716-42f6-b5fb-68f5e03aa270
+[I 16:06:13.558 LabApp] Kernel restarted: 0250c6f6-c316-47b1-bf0e-314a8dbb77bd
+[I 16:06:14.782 LabApp] Adapting to protocol v5.1 for kernel 0250c6f6-c316-47b1-bf0e-314a8dbb77bd
+[I 16:06:14.783 LabApp] Restoring connection for 0250c6f6-c316-47b1-bf0e-314a8dbb77bd:e80dd462-8716-42f6-b5fb-68f5e03aa270
+[I 16:06:14.783 LabApp] Replaying 10 buffered messages
+[I 16:06:14.812 LabApp] Adapting to protocol v5.1 for kernel 0250c6f6-c316-47b1-bf0e-314a8dbb77bd
+[I 16:06:16.814 LabApp] Saving file at /ckks_titanic/notebooks/2-ap-main.ipynb
+[I 16:07:24.294 LabApp] Saving file at /ckks_titanic/models/encrypted_LR.py
+[I 16:07:25.129 LabApp] Saving file at /ckks_titanic/models/encrypted_LR.py
+[I 16:07:25.309 LabApp] Saving file at /ckks_titanic/models/encrypted_LR.py
+[I 16:07:25.445 LabApp] Saving file at /ckks_titanic/models/encrypted_LR.py
+[I 16:07:25.617 LabApp] Saving file at /ckks_titanic/models/encrypted_LR.py
+[I 16:07:32.884 LabApp] Saving file at /ckks_titanic/models/encrypted_LR.py
+[I 16:07:43.285 LabApp] Starting buffering for 0250c6f6-c316-47b1-bf0e-314a8dbb77bd:aadbb498-33c9-4ef9-b1db-0dac32421c62
+[I 16:07:43.807 LabApp] Kernel restarted: 0250c6f6-c316-47b1-bf0e-314a8dbb77bd
+[I 16:07:45.042 LabApp] Adapting to protocol v5.1 for kernel 0250c6f6-c316-47b1-bf0e-314a8dbb77bd
+[I 16:07:45.043 LabApp] Discarding 10 buffered messages for 0250c6f6-c316-47b1-bf0e-314a8dbb77bd:aadbb498-33c9-4ef9-b1db-0dac32421c62
+[I 16:07:45.073 LabApp] Adapting to protocol v5.1 for kernel 0250c6f6-c316-47b1-bf0e-314a8dbb77bd
+[I 16:08:16.963 LabApp] Saving file at /ckks_titanic/notebooks/2-ap-main.ipynb
+[I 16:08:36.718 LabApp] Saving file at /ckks_titanic/models/encrypted_LR.py
+[I 16:08:42.369 LabApp] Starting buffering for 0250c6f6-c316-47b1-bf0e-314a8dbb77bd:aadbb498-33c9-4ef9-b1db-0dac32421c62
+[I 16:08:42.890 LabApp] Kernel restarted: 0250c6f6-c316-47b1-bf0e-314a8dbb77bd
+[I 16:08:44.226 LabApp] Adapting to protocol v5.1 for kernel 0250c6f6-c316-47b1-bf0e-314a8dbb77bd
+[I 16:08:44.228 LabApp] Discarding 10 buffered messages for 0250c6f6-c316-47b1-bf0e-314a8dbb77bd:aadbb498-33c9-4ef9-b1db-0dac32421c62
+[I 16:08:44.260 LabApp] Adapting to protocol v5.1 for kernel 0250c6f6-c316-47b1-bf0e-314a8dbb77bd

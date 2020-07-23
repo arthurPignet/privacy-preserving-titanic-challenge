@@ -217,8 +217,8 @@ class LogisticRegressionHE:
             nag_weight = self.refresh(nag_weight)
             nag_bias = self.refresh(nag_bias)
 
-            prev_weight = self.weight.copy()
-            prev_bias = self.bias.copy()
+            prev_weight = self.weight
+            prev_bias = self.bias
             self.weight = nag_weight
             self.bias = nag_bias
 
@@ -258,8 +258,8 @@ class LogisticRegressionHE:
                 self.loss_list.append(self.loss(predictions, Y))
                 self.logger.info('Loss : ' + str(self.loss_list[-1]) + ".")
             if self.save_weight > 0 and self.iter % self.save_weight == 0:
-                self.weight_list.append(self.weight.copy())
-                self.bias_list.append(self.bias.copy())
+                self.weight_list.append(self.weight)
+                self.bias_list.append(self.bias)
 
             self.iter += 1
 
