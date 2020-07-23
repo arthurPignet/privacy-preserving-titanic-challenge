@@ -195,15 +195,15 @@ class LogisticRegression:
         batches = [(x, y) for x, y in zip(X, Y)]
         inv_n = (1 / len(Y))
 
-        velocity_w = self.weight
-        velocity_b = self.bias
+        nag_weight = self.weight
+        nag_bias = self.bias
 
         while self.iter < self.num_iter:
 
             prev_weight = self.weight.copy()
             prev_bias = self.bias.copy()
-            self.weight = velocity_w
-            self.bias = velocity_b
+            self.weight = nag_weight
+            self.bias = nag_bias
 
             if self.n_jobs > 1:
                 try:
@@ -236,8 +236,8 @@ class LogisticRegression:
             self.weight = self.refresh(self.weight)
             self.bias = self.refresh(self.bias)
 
-            velocity_w = self.weight + (self.weight - prev_weight) * self.mr
-            velocity_b = self.bias + (self.bias - prev_bias) * self.mr
+            nag_weight = self.weight + (self.weight - prev_weight) * self.mr
+            nag_bias = self.bias + (self.bias - prev_bias) * self.mr
 
             if self.verbose > 0 and self.iter % self.verbose == 0:
                 self.logger.info("Just finished iteration number %d " % (self.iter + 1))
