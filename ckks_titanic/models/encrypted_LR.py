@@ -208,11 +208,14 @@ class LogisticRegressionHE:
 
         batches = [(x, y) for x, y in zip(X, Y)]
         inv_n = (1 / len(Y))
-
+            
         nag_weight = self.weight
         nag_bias = self.bias
-
+        
         while self.iter < self.num_iter:
+            
+            nag_weight = self.refresh(nag_weight)
+            nag_bias = self.refresh(nag_bias)
 
             prev_weight = self.weight
             prev_bias = self.bias
@@ -248,9 +251,6 @@ class LogisticRegressionHE:
 
             self.weight -= direction_weight
             self.bias -= direction_bias
-
-            self.weight = self.refresh(self.weight)
-            self.bias = self.refresh(self.bias)
 
             nag_weight = self.weight + (self.weight - prev_weight) * self.mr
             nag_bias = self.bias + (self.bias - prev_bias) * self.mr
