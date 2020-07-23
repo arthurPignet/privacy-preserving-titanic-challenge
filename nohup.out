@@ -1,0 +1,76 @@
+[I 08:18:43.582 LabApp] Writing notebook server cookie secret to /run/user/1004/jupyter/notebook_cookie_secret
+[I 08:18:47.892 LabApp] JupyterLab extension loaded from /home/apignet/anaconda3/lib/python3.7/site-packages/jupyterlab
+[I 08:18:47.892 LabApp] JupyterLab application directory is /home/apignet/anaconda3/share/jupyter/lab
+[W 08:18:47.898 LabApp] JupyterLab server extension not enabled, manually loading...
+[I 08:18:47.900 LabApp] JupyterLab extension loaded from /home/apignet/anaconda3/lib/python3.7/site-packages/jupyterlab
+[I 08:18:47.900 LabApp] JupyterLab application directory is /home/apignet/anaconda3/share/jupyter/lab
+[I 08:18:47.901 LabApp] Serving notebooks from local directory: /home/apignet/homomorphic-encryption
+[I 08:18:47.901 LabApp] The Jupyter Notebook is running at:
+[I 08:18:47.901 LabApp] http://(he1-test or 127.0.0.1):8888/
+[I 08:18:47.901 LabApp] Use Control-C to stop this server and shut down all kernels (twice to skip confirmation).
+[I 08:23:30.833 LabApp] 302 GET / (159.180.248.170) 0.61ms
+[I 08:23:30.848 LabApp] 302 GET /lab? (159.180.248.170) 0.74ms
+[W 08:23:38.313 LabApp] 401 POST /login?next=%2Flab%3F (159.180.248.170) 1.89ms referer=http://35.205.167.109:8888/login?next=%2Flab%3F
+[W 08:23:42.023 LabApp] Not allowing login redirect to '/lab?'
+[I 08:23:42.024 LabApp] 302 POST /login?next=%2Flab%3F (159.180.248.170) 1.30ms
+[I 08:23:42.039 LabApp] 302 GET / (159.180.248.170) 0.50ms
+[W 08:23:43.379 LabApp] Could not determine jupyterlab build status without nodejs
+[W 08:23:47.953 LabApp] 404 GET /api/contents/homomorphic-encryption/ckks_titanic/models?1595492627918 (159.180.248.170): No such file or directory: homomorphic-encryption/ckks_titanic/models
+[W 08:23:47.953 LabApp] No such file or directory: homomorphic-encryption/ckks_titanic/models
+[W 08:23:47.953 LabApp] 404 GET /api/contents/homomorphic-encryption/ckks_titanic/models?1595492627918 (159.180.248.170) 1.26ms referer=http://35.205.167.109:8888/lab?
+[W 08:23:47.956 LabApp] 404 GET /api/contents/homomorphic-encryption/ckks_titanic/notebooks/2-ap-main.ipynb?content=0&1595492627922 (159.180.248.170): No such file or directory: homomorphic-encryption/ckks_titanic/notebooks/2-ap-main.ipynb
+[W 08:23:47.956 LabApp] No such file or directory: homomorphic-encryption/ckks_titanic/notebooks/2-ap-main.ipynb
+[W 08:23:47.957 LabApp] 404 GET /api/contents/homomorphic-encryption/ckks_titanic/notebooks/2-ap-main.ipynb?content=0&1595492627922 (159.180.248.170) 1.08ms referer=http://35.205.167.109:8888/lab?
+[W 08:23:47.959 LabApp] 404 GET /api/contents/homomorphic-encryption/ckks_titanic/models/encrypted_LR.py?content=0&1595492627928 (159.180.248.170): No such file or directory: homomorphic-encryption/ckks_titanic/models/encrypted_LR.py
+[W 08:23:47.959 LabApp] No such file or directory: homomorphic-encryption/ckks_titanic/models/encrypted_LR.py
+[W 08:23:47.960 LabApp] 404 GET /api/contents/homomorphic-encryption/ckks_titanic/models/encrypted_LR.py?content=0&1595492627928 (159.180.248.170) 0.99ms referer=http://35.205.167.109:8888/lab?
+[W 08:23:47.964 LabApp] 404 GET /api/contents/homomorphic-encryption/ckks_titanic/models/unencrypted_LR.py?content=0&1595492627932 (159.180.248.170): No such file or directory: homomorphic-encryption/ckks_titanic/models/unencrypted_LR.py
+[W 08:23:47.964 LabApp] No such file or directory: homomorphic-encryption/ckks_titanic/models/unencrypted_LR.py
+[W 08:23:47.964 LabApp] 404 GET /api/contents/homomorphic-encryption/ckks_titanic/models/unencrypted_LR.py?content=0&1595492627932 (159.180.248.170) 0.98ms referer=http://35.205.167.109:8888/lab?
+[W 08:24:24.996 LabApp] Notebook ckks_titanic/notebooks/2-ap-main.ipynb is not trusted
+[I 08:24:27.513 LabApp] Kernel started: 0250c6f6-c316-47b1-bf0e-314a8dbb77bd
+[I 08:24:29.200 LabApp] Adapting to protocol v5.1 for kernel 0250c6f6-c316-47b1-bf0e-314a8dbb77bd
+[I 08:24:29.235 LabApp] Adapting to protocol v5.1 for kernel 0250c6f6-c316-47b1-bf0e-314a8dbb77bd
+[I 08:26:26.625 LabApp] Saving file at /ckks_titanic/notebooks/2-ap-main.ipynb
+[W 08:26:26.626 LabApp] Notebook ckks_titanic/notebooks/2-ap-main.ipynb is not trusted
+[I 08:28:26.839 LabApp] Saving file at /ckks_titanic/notebooks/2-ap-main.ipynb
+[W 08:28:26.840 LabApp] Notebook ckks_titanic/notebooks/2-ap-main.ipynb is not trusted
+[I 08:30:28.621 LabApp] Saving file at /ckks_titanic/notebooks/2-ap-main.ipynb
+[W 08:30:28.622 LabApp] Notebook ckks_titanic/notebooks/2-ap-main.ipynb is not trusted
+[I 08:32:28.805 LabApp] Saving file at /ckks_titanic/notebooks/2-ap-main.ipynb
+[W 08:32:28.806 LabApp] Notebook ckks_titanic/notebooks/2-ap-main.ipynb is not trusted
+[I 08:34:29.561 LabApp] Saving file at /ckks_titanic/notebooks/2-ap-main.ipynb
+[W 08:34:29.562 LabApp] Notebook ckks_titanic/notebooks/2-ap-main.ipynb is not trusted
+[I 08:36:32.254 LabApp] Saving file at /ckks_titanic/notebooks/2-ap-main.ipynb
+[W 08:36:32.254 LabApp] Notebook ckks_titanic/notebooks/2-ap-main.ipynb is not trusted
+[I 08:38:32.495 LabApp] Saving file at /ckks_titanic/notebooks/2-ap-main.ipynb
+[W 08:38:32.495 LabApp] Notebook ckks_titanic/notebooks/2-ap-main.ipynb is not trusted
+[I 08:40:32.727 LabApp] Saving file at /ckks_titanic/notebooks/2-ap-main.ipynb
+[W 08:40:32.727 LabApp] Notebook ckks_titanic/notebooks/2-ap-main.ipynb is not trusted
+[I 08:42:33.069 LabApp] Saving file at /ckks_titanic/notebooks/2-ap-main.ipynb
+[W 08:42:33.070 LabApp] Notebook ckks_titanic/notebooks/2-ap-main.ipynb is not trusted
+[I 08:44:33.847 LabApp] Saving file at /ckks_titanic/notebooks/2-ap-main.ipynb
+[W 08:44:33.848 LabApp] Notebook ckks_titanic/notebooks/2-ap-main.ipynb is not trusted
+[I 08:46:34.032 LabApp] Saving file at /ckks_titanic/notebooks/2-ap-main.ipynb
+[W 08:46:34.032 LabApp] Notebook ckks_titanic/notebooks/2-ap-main.ipynb is not trusted
+[I 08:52:34.256 LabApp] Saving file at /ckks_titanic/notebooks/2-ap-main.ipynb
+[W 08:52:34.257 LabApp] Notebook ckks_titanic/notebooks/2-ap-main.ipynb is not trusted
+[I 08:54:35.010 LabApp] Saving file at /ckks_titanic/notebooks/2-ap-main.ipynb
+[W 08:54:35.011 LabApp] Notebook ckks_titanic/notebooks/2-ap-main.ipynb is not trusted
+[I 08:56:35.130 LabApp] Saving file at /ckks_titanic/notebooks/2-ap-main.ipynb
+[W 08:56:35.131 LabApp] Notebook ckks_titanic/notebooks/2-ap-main.ipynb is not trusted
+[I 08:58:35.257 LabApp] Saving file at /ckks_titanic/notebooks/2-ap-main.ipynb
+[W 08:58:35.258 LabApp] Notebook ckks_titanic/notebooks/2-ap-main.ipynb is not trusted
+[I 09:00:35.381 LabApp] Saving file at /ckks_titanic/notebooks/2-ap-main.ipynb
+[W 09:00:35.381 LabApp] Notebook ckks_titanic/notebooks/2-ap-main.ipynb is not trusted
+[I 09:02:35.503 LabApp] Saving file at /ckks_titanic/notebooks/2-ap-main.ipynb
+[I 09:04:35.729 LabApp] Saving file at /ckks_titanic/notebooks/2-ap-main.ipynb
+[I 09:08:35.864 LabApp] Saving file at /ckks_titanic/notebooks/2-ap-main.ipynb
+[I 09:10:36.053 LabApp] Saving file at /ckks_titanic/notebooks/2-ap-main.ipynb
+[I 09:12:36.220 LabApp] Saving file at /ckks_titanic/notebooks/2-ap-main.ipynb
+[I 09:14:36.382 LabApp] Saving file at /ckks_titanic/notebooks/2-ap-main.ipynb
+[I 09:18:36.531 LabApp] Saving file at /ckks_titanic/notebooks/2-ap-main.ipynb
+[I 09:20:36.668 LabApp] Saving file at /ckks_titanic/notebooks/2-ap-main.ipynb
+[I 09:22:36.814 LabApp] Saving file at /ckks_titanic/notebooks/2-ap-main.ipynb
+[I 09:24:36.946 LabApp] Saving file at /ckks_titanic/notebooks/2-ap-main.ipynb
+[I 09:26:37.051 LabApp] Saving file at /ckks_titanic/notebooks/2-ap-main.ipynb
