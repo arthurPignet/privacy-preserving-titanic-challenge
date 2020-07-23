@@ -114,3 +114,19 @@
 [I 12:06:43.349 LabApp] Saving file at /ckks_titanic/notebooks/2-ap-main.ipynb
 [I 12:08:43.680 LabApp] Saving file at /ckks_titanic/notebooks/2-ap-main.ipynb
 [I 12:12:43.843 LabApp] Saving file at /ckks_titanic/notebooks/2-ap-main.ipynb
+[I 13:20:21.892 LabApp] Saving file at /ckks_titanic/notebooks/2-ap-main.ipynb
+[I 13:21:10.378 LabApp] Starting buffering for 0250c6f6-c316-47b1-bf0e-314a8dbb77bd:e80dd462-8716-42f6-b5fb-68f5e03aa270
+[I 13:21:11.114 LabApp] Kernel restarted: 0250c6f6-c316-47b1-bf0e-314a8dbb77bd
+[I 13:21:12.441 LabApp] Adapting to protocol v5.1 for kernel 0250c6f6-c316-47b1-bf0e-314a8dbb77bd
+[I 13:21:12.442 LabApp] Restoring connection for 0250c6f6-c316-47b1-bf0e-314a8dbb77bd:e80dd462-8716-42f6-b5fb-68f5e03aa270
+[I 13:21:12.442 LabApp] Replaying 10 buffered messages
+[I 13:22:22.075 LabApp] Saving file at /ckks_titanic/notebooks/2-ap-main.ipynb
+[I 13:27:56.493 LabApp] Copying ckks_titanic/notebooks/2-ap-main.ipynb to /ckks_titanic/notebooks
+[I 13:28:26.336 LabApp] Kernel started: 1be3a0e0-1da3-4946-a62f-2ec9099435ea
+[I 13:28:27.511 LabApp] Adapting to protocol v5.1 for kernel 1be3a0e0-1da3-4946-a62f-2ec9099435ea
+[I 13:29:59.835 LabApp] Starting buffering for 1be3a0e0-1da3-4946-a62f-2ec9099435ea:865c9dea-e6ba-4df5-880b-2207a99f38b9
+[I 13:30:00.155 LabApp] Kernel restarted: 1be3a0e0-1da3-4946-a62f-2ec9099435ea
+[I 13:30:01.427 LabApp] Adapting to protocol v5.1 for kernel 1be3a0e0-1da3-4946-a62f-2ec9099435ea
+[I 13:30:01.428 LabApp] Restoring connection for 1be3a0e0-1da3-4946-a62f-2ec9099435ea:865c9dea-e6ba-4df5-880b-2207a99f38b9
+[I 13:30:01.428 LabApp] Replaying 9 buffered messages
+[I 13:30:25.124 LabApp] Saving file at /ckks_titanic/notebooks/testing the NAG.ipynb
