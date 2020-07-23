@@ -200,6 +200,9 @@ class LogisticRegression:
 
         while self.iter < self.num_iter:
 
+            nag_weight = self.refresh(nag_weight)
+            nag_bias = self.refresh(nag_bias)
+            
             prev_weight = self.weight.copy()
             prev_bias = self.bias.copy()
             self.weight = nag_weight
@@ -232,9 +235,6 @@ class LogisticRegression:
 
             self.weight -= direction_weight
             self.bias -= direction_bias
-
-            self.weight = self.refresh(self.weight)
-            self.bias = self.refresh(self.bias)
 
             nag_weight = self.weight + (self.weight - prev_weight) * self.mr
             nag_bias = self.bias + (self.bias - prev_bias) * self.mr
