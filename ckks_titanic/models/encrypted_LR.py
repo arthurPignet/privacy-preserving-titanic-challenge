@@ -102,7 +102,7 @@ class LogisticRegressionHE:
         for i in range(len(enc_predictions)):
             res -= Y[i] * self.__log(enc_predictions[i]) * inv_n
             res -= (1 - Y[i]) * self.__log(1 - enc_predictions[i]) * inv_n
-        return res
+        return res[0]
 
     def accuracy(self, unencrypted_X=None, unencrypted_Y=None):
         """
