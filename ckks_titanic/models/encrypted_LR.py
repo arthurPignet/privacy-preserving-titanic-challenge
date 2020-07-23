@@ -14,13 +14,13 @@ class LogisticRegressionHE:
                  refresh_function,
                  confidential_kwarg,
                  accuracy=None,
-                 lr=1,
+                 learning_rate=1,
+                 momentum_rate=0,
                  max_epoch=100,
                  reg_para=0.5,
                  verbose=-1,
                  save_weight=-1,
-                 n_jobs=1
-                 ):
+                 n_jobs=1):
         """
 
             Constructor
@@ -31,7 +31,7 @@ class LogisticRegressionHE:
             :param refresh_function: function. Refresh ciphertext
             :param confidential_kwarg: dict. Will be passed as **kwarg to refresh, loss and accuracy functions. Contain confidential data which are needed by those functions.
             :param accuracy: function. Compute accuracy
-            :param lr: float. learning rate
+            :param learning_rate: float. learning rate
             :param max_epoch: int. number of epoch to be performed
             :param reg_para: float. regularization parameter
             :param verbose: int. number of epoch were the loss is not computed, nor printed.
@@ -43,6 +43,7 @@ class LogisticRegressionHE:
                                 If set to -1, the weight will not be saved
 
         """
+
         self.logger = logging.getLogger(__name__)
 
         self.refresh_function = refresh_function
@@ -55,7 +56,8 @@ class LogisticRegressionHE:
         self.iter = 0
         self.num_iter = max_epoch
         self.reg_para = reg_para
-        self.lr = lr
+        self.lr = learning_rate
+        self.mr = momentum_rate
         self.n_jobs = n_jobs
 
         if verbose > 0:
@@ -206,11 +208,16 @@ class LogisticRegressionHE:
 
         batches = [(x, y) for x, y in zip(X, Y)]
         inv_n = (1 / len(Y))
+
+        nag_weight = self.weight
+        nag_bias = self.bias
+
         while self.iter < self.num_iter:
 
-            # refreshing the init_weight and the init_bias to avoid scale out of bound
-            self.weight = self.refresh(self.weight)
-            self.bias = self.refresh(self.bias)
+            prev_weight = self.weight
+            prev_bias = self.bias
+            self.weight = nag_weight
+            self.bias = nag_bias
 
             if self.n_jobs > 1:
                 try:
@@ -241,6 +248,12 @@ class LogisticRegressionHE:
 
             self.weight -= direction_weight
             self.bias -= direction_bias
+
+            self.weight = self.refresh(self.weight)
+            self.bias = self.refresh(self.bias)
+
+            nag_weight = self.weight + (self.weight - prev_weight) * self.mr
+            nag_bias = self.bias + (self.bias - prev_bias) * self.mr
 
             if self.verbose > 0 and self.iter % self.verbose == 0:
                 self.logger.info("Just finished iteration number %d " % (self.iter + 1))
