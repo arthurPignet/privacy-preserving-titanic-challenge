@@ -214,8 +214,8 @@ class LogisticRegressionHE:
 
         while self.iter < self.num_iter:
 
-            prev_weight = self.weight
-            prev_bias = self.bias
+            prev_weight = self.weight.copy()
+            prev_bias = self.bias.copy()
             self.weight = nag_weight
             self.bias = nag_bias
 
@@ -226,22 +226,20 @@ class LogisticRegressionHE:
                     multiprocess_results = process.map_async(self._forward_backward_wrapper, batches)
                     process.close()
                     process.join()
-
                     directions = multiprocess_results.get()
                 except:
                     self.logger.warning("One tenseal object cannot be pickle, aborting the use of multiprocessing.")
                     directions = [self._forward_backward_wrapper(i) for i in batches]
-
             else:
                 directions = [self._forward_backward_wrapper(i) for i in batches]
 
             direction_weight, direction_bias = 0, 0
-            encrypted_predictions = []
+            predictions = []
 
             for batch_gradient_weight, batch_gradient_bias, prediction in directions:
                 direction_weight += batch_gradient_weight
                 direction_bias += batch_gradient_bias
-                encrypted_predictions.append(prediction)
+                predictions.append(prediction)
 
             direction_weight = (direction_weight * self.lr * inv_n) + (self.weight * (self.lr * inv_n * self.reg_para))
             direction_bias = direction_bias * self.lr * inv_n + (self.bias * (self.lr * inv_n * self.reg_para))
@@ -257,11 +255,11 @@ class LogisticRegressionHE:
 
             if self.verbose > 0 and self.iter % self.verbose == 0:
                 self.logger.info("Just finished iteration number %d " % (self.iter + 1))
-                self.loss_list.append(self.loss(Y, encrypted_predictions))
+                self.loss_list.append(self.loss(predictions, Y))
                 self.logger.info('Loss : ' + str(self.loss_list[-1]) + ".")
             if self.save_weight > 0 and self.iter % self.save_weight == 0:
-                self.weight_list.append(self.weight)
-                self.bias_list.append(self.bias)
+                self.weight_list.append(self.weight.copy())
+                self.bias_list.append(self.bias.copy())
 
             self.iter += 1
 
