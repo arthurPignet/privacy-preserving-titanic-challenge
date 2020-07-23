@@ -98,7 +98,7 @@ class LogisticRegressionHE:
         self.weight = self.refresh(self.weight)
         self.bias = self.refresh(self.bias)
         inv_n = 1 / len(Y)
-        res = (self.reg_para / 2) * (self.weight.dot(self.weight) + self.bias * self.bias)
+        res = (self.reg_para*inv_n / 2) * (self.weight.dot(self.weight) + self.bias * self.bias)
         for i in range(len(enc_predictions)):
             res -= Y[i] * self.__log(enc_predictions[i]) * inv_n
             res -= (1 - Y[i]) * self.__log(1 - enc_predictions[i]) * inv_n
