@@ -196,3 +196,30 @@
 [I 14:50:27.333 LabApp] Adapting to protocol v5.1 for kernel 0250c6f6-c316-47b1-bf0e-314a8dbb77bd
 [I 14:50:47.731 LabApp] Saving file at /ckks_titanic/notebooks/2-ap-main.ipynb
 [I 14:51:20.780 LabApp] Saving file at /ckks_titanic/notebooks/2-ap-main.ipynb
+[I 14:53:20.966 LabApp] Saving file at /ckks_titanic/notebooks/2-ap-main.ipynb
+[I 14:55:21.186 LabApp] Saving file at /ckks_titanic/notebooks/2-ap-main.ipynb
+[I 14:57:21.518 LabApp] Saving file at /ckks_titanic/notebooks/2-ap-main.ipynb
+[I 14:59:21.770 LabApp] Saving file at /ckks_titanic/notebooks/2-ap-main.ipynb
+[I 15:11:22.423 LabApp] Saving file at /ckks_titanic/notebooks/2-ap-main.ipynb
+[I 15:12:09.396 LabApp] Starting buffering for 1e514758-d040-4c5a-af4c-2056869b39e0:85fde789-d57b-4a99-baa0-41dd5db91bac
+[I 15:12:09.762 LabApp] Kernel restarted: 1e514758-d040-4c5a-af4c-2056869b39e0
+[I 15:12:11.062 LabApp] Adapting to protocol v5.1 for kernel 1e514758-d040-4c5a-af4c-2056869b39e0
+[I 15:12:11.063 LabApp] Restoring connection for 1e514758-d040-4c5a-af4c-2056869b39e0:85fde789-d57b-4a99-baa0-41dd5db91bac
+[I 15:12:11.063 LabApp] Replaying 9 buffered messages
+[I 15:13:13.310 LabApp] Saving file at /ckks_titanic/notebooks/testing the NAG.ipynb
+[I 15:15:22.578 LabApp] Saving file at /ckks_titanic/notebooks/2-ap-main.ipynb
+[I 15:17:22.770 LabApp] Saving file at /ckks_titanic/notebooks/2-ap-main.ipynb
+[I 15:19:22.948 LabApp] Saving file at /ckks_titanic/notebooks/2-ap-main.ipynb
+[I 15:23:23.125 LabApp] Saving file at /ckks_titanic/notebooks/2-ap-main.ipynb
+[I 15:25:23.337 LabApp] Saving file at /ckks_titanic/notebooks/2-ap-main.ipynb
+[I 15:27:23.550 LabApp] Saving file at /ckks_titanic/notebooks/2-ap-main.ipynb
+[I 15:29:23.760 LabApp] Saving file at /ckks_titanic/notebooks/2-ap-main.ipynb
+[I 15:31:23.995 LabApp] Saving file at /ckks_titanic/notebooks/2-ap-main.ipynb
+[I 15:33:24.209 LabApp] Saving file at /ckks_titanic/notebooks/2-ap-main.ipynb
+[I 15:35:24.366 LabApp] Saving file at /ckks_titanic/notebooks/2-ap-main.ipynb
+[I 15:37:13.507 LabApp] Saving file at /ckks_titanic/notebooks/testing the NAG.ipynb
+[I 15:37:24.517 LabApp] Saving file at /ckks_titanic/notebooks/2-ap-main.ipynb
+[I 15:39:24.729 LabApp] Saving file at /ckks_titanic/notebooks/2-ap-main.ipynb
+[I 15:41:25.028 LabApp] Saving file at /ckks_titanic/notebooks/2-ap-main.ipynb
+[I 15:43:25.225 LabApp] Saving file at /ckks_titanic/notebooks/2-ap-main.ipynb
+[I 15:45:25.433 LabApp] Saving file at /ckks_titanic/notebooks/2-ap-main.ipynb
