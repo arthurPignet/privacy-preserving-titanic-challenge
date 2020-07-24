@@ -100,7 +100,7 @@ class LogisticRegressionHE:
         self.weight = self.refresh(self.weight)
         self.bias = self.refresh(self.bias)
         inv_n = 1 / len(Y)
-        res = (self.reg_para*inv_n / 2) * (self.weight.dot(self.weight) + self.bias * self.bias)
+        res = (self.reg_para * inv_n / 2) * (self.weight.dot(self.weight) + self.bias * self.bias)
         for i in range(len(enc_predictions)):
             res -= Y[i] * self.__log(enc_predictions[i]) * inv_n
             res -= (1 - Y[i]) * self.__log(1 - enc_predictions[i]) * inv_n
@@ -193,9 +193,9 @@ class LogisticRegressionHE:
         :return: : Tuple with 3 CKKS vectors. Encrypted batch_gradient for weight and bias, and batch predictions.
 
         """
-        prediction = self.forward(X)
-        grads = self.backward(X, prediction, Y)
-        return grads[0], grads[1], prediction
+        predictions = self.forward(X)
+        grads = self.backward(X, predictions, Y)
+        return grads[0], grads[1], predictions
 
     def fit(self, X, Y):
         """
@@ -208,19 +208,11 @@ class LogisticRegressionHE:
 
         batches = [(x, y) for x, y in zip(X, Y)]
         inv_n = (1 / len(Y))
-            
-        nag_weight = self.weight
-        nag_bias = self.bias
-        
-        while self.iter < self.num_iter:
-            
-            nag_weight = self.refresh(nag_weight)
-            nag_bias = self.refresh(nag_bias)
 
-            prev_weight = self.weight
-            prev_bias = self.bias
-            self.weight = nag_weight
-            self.bias = nag_bias
+        while self.iter < self.num_iter:
+
+            self.weight = self.refresh(self.weight)
+            self.bias = self.refresh(self.bias)
 
             if self.n_jobs > 1:
                 try:
@@ -250,11 +242,10 @@ class LogisticRegressionHE:
             self.weight -= direction_weight
             self.bias -= direction_bias
 
-            nag_weight = self.weight + (self.weight - prev_weight) * self.mr
-            nag_bias = self.bias + (self.bias - prev_bias) * self.mr
-
             if self.verbose > 0 and self.iter % self.verbose == 0:
                 self.logger.info("Just finished iteration number %d " % (self.iter + 1))
+                self.weight = self.refresh(self.weight)
+                self.bias = self.refresh(self.bias)
                 self.loss_list.append(self.loss(predictions, Y))
                 self.logger.info('Loss : ' + str(self.loss_list[-1]) + ".")
             if self.save_weight > 0 and self.iter % self.save_weight == 0:
