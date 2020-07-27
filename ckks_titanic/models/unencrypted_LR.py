@@ -1,5 +1,6 @@
 import logging
 import multiprocessing
+import time
 
 import numpy as np
 
@@ -50,7 +51,7 @@ class LogisticRegression:
         self.save_weight = save_weight
 
         self.iter = 0
-        self.num_iter = max_epoch
+        self.nb_epoch = max_epoch
         self.reg_para = reg_para
         self.lr = learning_rate
         self.mr = momentum_rate
@@ -102,7 +103,7 @@ class LogisticRegression:
         for i in range(len(predictions)):
             res -= Y[i] * self._log(predictions[i]) * inv_n
             res -= (1 - Y[i]) * self._log(1 - predictions[i]) * inv_n
-        return res
+        return res[0]
 
     def true_loss(self, X, Y):
         predictions = 1 / (1 + np.exp(-(X.dot(self.weight) + self.bias)))
@@ -208,8 +209,8 @@ class LogisticRegression:
         batches = [(x, y) for x, y in zip(X, Y)]
         inv_n = (1 / len(Y))
 
-        while self.iter < self.num_iter:
-
+        while self.iter < self.nb_epoch:
+            timer_iter = time.time()
             self.weight = self.refresh(self.weight)
             self.bias = self.refresh(self.bias)
 
@@ -240,10 +241,11 @@ class LogisticRegression:
             self.weight -= direction_weight
             self.bias -= direction_bias
 
-            if self.verbose > 0 and self.iter % self.verbose == 0:
-                self.logger.info(
-                    "Just finished iteration number %d. Starting computations of the loss " % (self.iter + 1))
+            self.logger.info(
+                "Just finished iteration number %d in  %s seconds. Starting computations of the loss " % (
+                    self.iter, time.time() - timer_iter))
 
+            if self.verbose > 0 and self.iter % self.verbose == 0:
                 self.loss_list.append(self.loss(predictions, Y))
                 self.true_loss_list.append(self.true_loss(X, Y))
                 self.logger.info('Loss : ' + str(self.loss_list[-1]) + ".")
@@ -253,7 +255,7 @@ class LogisticRegression:
 
             self.iter += 1
 
-            return self
+        return self
 
     def predict(self, X):
         """

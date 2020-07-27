@@ -1,6 +1,6 @@
 import logging
 import multiprocessing
-
+import time
 
 class LogisticRegressionHE:
     """
@@ -210,6 +210,7 @@ class LogisticRegressionHE:
         inv_n = (1 / len(Y))
 
         while self.iter < self.num_iter:
+            timer_iter = time.time()
 
             self.weight = self.refresh(self.weight)
             self.bias = self.refresh(self.bias)
@@ -242,8 +243,11 @@ class LogisticRegressionHE:
             self.weight -= direction_weight
             self.bias -= direction_bias
 
+            self.logger.info(
+                "Just finished iteration number %d in  %s seconds. Starting computations of the loss " % (
+                    self.iter, time.time() - timer_iter))
+
             if self.verbose > 0 and self.iter % self.verbose == 0:
-                self.logger.info("Just finished iteration number %d " % (self.iter + 1))
                 self.weight = self.refresh(self.weight)
                 self.bias = self.refresh(self.bias)
                 self.loss_list.append(self.loss(predictions, Y))
@@ -253,6 +257,7 @@ class LogisticRegressionHE:
                 self.bias_list.append(self.bias)
 
             self.iter += 1
+        return self
 
     def predict(self, X):
         """
