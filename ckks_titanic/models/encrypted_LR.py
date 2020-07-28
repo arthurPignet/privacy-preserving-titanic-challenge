@@ -223,6 +223,7 @@ class LogisticRegressionHE:
                     process.close()
                     process.join()
                     directions = multiprocess_results.get()
+                    self.logger.info("Multiprocessing worked !")
                 except:
                     self.logger.warning("One tenseal object cannot be pickle, aborting the use of multiprocessing.")
                     directions = [self._forward_backward_wrapper(i) for i in batches]
@@ -244,13 +245,14 @@ class LogisticRegressionHE:
             self.bias -= direction_bias
 
             self.logger.info(
-                "Just finished iteration number %d in  %s seconds. Starting computations of the loss " % (
+                "Just finished iteration number %d in  %s seconds. " % (
                     self.iter, time.time() - timer_iter))
 
             if self.verbose > 0 and self.iter % self.verbose == 0:
                 self.weight = self.refresh(self.weight)
                 self.bias = self.refresh(self.bias)
                 self.loss_list.append(self.loss(predictions, Y))
+                self.logger.info( "Starting computation of the loss ...")
                 self.logger.info('Loss : ' + str(self.loss_list[-1]) + ".")
             if self.save_weight > 0 and self.iter % self.save_weight == 0:
                 self.weight_list.append(self.weight)
