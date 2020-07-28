@@ -216,16 +216,20 @@ class LogisticRegression:
 
             if self.n_jobs > 1:
                 try:
+                    print("trying multi")
                     process = multiprocessing.Pool(
                         processes=self.n_jobs)  # can be done while waiting for the refreshed weight
                     multiprocess_results = process.map_async(self._forward_backward_wrapper, batches)
                     process.close()
                     process.join()
                     directions = multiprocess_results.get()
+                    self.logger.info("Multiprocessing worked !")
                 except:
+                    print("multi failed")
                     self.logger.warning("One tenseal object cannot be pickle, aborting the use of multiprocessing.")
                     directions = [self._forward_backward_wrapper(i) for i in batches]
             else:
+                print("no multi")
                 directions = [self._forward_backward_wrapper(i) for i in batches]
 
             direction_weight, direction_bias = 0, 0
@@ -242,12 +246,13 @@ class LogisticRegression:
             self.bias -= direction_bias
 
             self.logger.info(
-                "Just finished iteration number %d in  %s seconds. Starting computations of the loss " % (
+                "Just finished iteration number %d in  %s seconds." % (
                     self.iter, time.time() - timer_iter))
 
             if self.verbose > 0 and self.iter % self.verbose == 0:
                 self.loss_list.append(self.loss(predictions, Y))
                 self.true_loss_list.append(self.true_loss(X, Y))
+                self.logger.info( "Starting computation of the loss ...")
                 self.logger.info('Loss : ' + str(self.loss_list[-1]) + ".")
             if self.save_weight > 0 and self.iter % self.save_weight == 0:
                 self.weight_list.append(self.weight.copy())
