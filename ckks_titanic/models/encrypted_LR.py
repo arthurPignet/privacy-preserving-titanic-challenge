@@ -216,22 +216,9 @@ class LogisticRegressionHE:
 
             self.weight = self.refresh(self.weight)
             self.bias = self.refresh(self.bias)
-            args = [(self.weight, self.bias, x[0], x[1]) for x in batches]
 
-            if self.n_jobs > 1:
-                try:
-                    process = multiprocessing.Pool(
-                        processes=self.n_jobs)  # can be done while waiting for the refreshed weight
-                    multiprocess_results = process.map_async(self.forward_backward_wrapper, args)
-                    process.close()
-                    process.join()
-                    directions = multiprocess_results.get()
-                    self.logger.info("Multiprocessing worked !")
-                except:
-                    self.logger.warning("One tenseal object cannot be pickle, aborting the use of multiprocessing.")
-                    directions = [self.forward_backward_wrapper(i) for i in args]
-            else:
-                directions = [self.forward_backward_wrapper(i) for i in args]
+            directions = [self.forward_backward_wrapper(i) for i in batches]
+            # this aims to be replace by multiprocessing
 
             direction_weight, direction_bias = 0, 0
             predictions = []

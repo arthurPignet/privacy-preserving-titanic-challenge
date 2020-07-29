@@ -1,5 +1,4 @@
 import logging
-import multiprocessing
 import time
 
 import numpy as np
@@ -214,7 +213,8 @@ class LogisticRegression:
             self.weight = self.refresh(self.weight)
             self.bias = self.refresh(self.bias)
 
-            directions = [forward_backward_wrapper(i) for i in batches] #this aims to be replace by multiprocessing
+            directions = [self._forward_backward_wrapper(i) for i in batches]
+            # this aims to be replace by multiprocessing
 
             direction_weight, direction_bias = 0, 0
             predictions = []
@@ -223,6 +223,7 @@ class LogisticRegression:
                 direction_weight += batch_gradient_weight
                 direction_bias += batch_gradient_bias
                 predictions.append(prediction)
+
             direction_weight = (direction_weight * self.lr * inv_n) + (self.weight * (self.lr * inv_n * self.reg_para))
             direction_bias = (direction_bias * self.lr * inv_n) + (self.bias * (self.lr * inv_n * self.reg_para))
 
@@ -236,7 +237,7 @@ class LogisticRegression:
             if self.verbose > 0 and self.iter % self.verbose == 0:
                 self.loss_list.append(self.loss(predictions, Y))
                 self.true_loss_list.append(self.true_loss(X, Y))
-                self.logger.info( "Starting computation of the loss ...")
+                self.logger.info("Starting computation of the loss ...")
                 self.logger.info('Loss : ' + str(self.loss_list[-1]) + ".")
             if self.save_weight > 0 and self.iter % self.save_weight == 0:
                 self.weight_list.append(self.weight.copy())
