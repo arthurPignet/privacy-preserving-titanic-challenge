@@ -3,49 +3,6 @@ import multiprocessing
 import time
 
 
-def forward(weight, bias, vec, mult_coeff=1):
-    """
-        Compute forward propagation on a CKKS vector (or a list of CKKS vectors)
-        :param bias:
-        :param weight:
-        :param vec: CKKS vector or list of CKKS vector on which we want to make predictions (ie forward propagation
-        :param mult_coeff: The return is equivalent to forward(x) * mult_coeff, but save one homomorph multiplication
-        :return: encrypted prediction or list of encrypted predictions
-    """
-    if type(vec) == list:
-        temp = [i.dot(weight) + bias for i in vec]
-        return [LogisticRegressionHE.sigmoid(i, mult_coeff=mult_coeff) for i in temp]
-    else:
-        res = vec.dot(weight) + bias
-        return LogisticRegressionHE.sigmoid(res, mult_coeff=mult_coeff)
-
-
-def forward_backward_wrapper(arg):
-    """
-    Wrapper for forward_backward, which expands the parameter tuple to forward_backward
-    :param arg: Tuple, (X,Y) with X standing for a list of encrypted (CKKS vectors). Features of the data on which predictions will be made, (forward propagation) and then the gradient will be computed (backpropagation)
-                              and Y standing for a list of encrypted CKKS vectors. Label of the data on which the gradient will be computed (backpropagation)
-    :return:
-            Tuple with 3 CKKS vectors. Encrypted batch_gradient for weight and bias, and batch predictions.
-    """
-    return forward_backward(*arg)
-
-
-def forward_backward(weight, bias, X, Y):
-    """
-    Perform forward propagation, and then backward propagation.
-    :param bias:
-    :param weight:
-    :param X: list of encrypted (CKKS vectors). Features of the data on which predictions will be made, (forward propagation) and then the gradient will be computed (backpropagation)
-    :param Y: list of encrypted CKKS vectors. Label of the data on which the gradient will be computed (backpropagation)
-    :return: : Tuple with 3 CKKS vectors. Encrypted batch_gradient for weight and bias, and batch predictions.
-
-    """
-    predictions = forward(weight, bias, X)
-    grads = LogisticRegressionHE.backward(X, predictions, Y)
-    return grads[0], grads[1], predictions
-
-
 class LogisticRegressionHE:
     """
         Model of logistic regression, performed on encrypted data, using homomorphic encryption, especially the CKKS scheme implemented in tenSEAL
@@ -219,6 +176,29 @@ class LogisticRegressionHE:
 
             return grad_weight, grad_bias
 
+    def forward_backward_wrapper(self, arg):
+        """
+        Wrapper for forward_backward, which expands the parameter tuple to forward_backward
+        :param arg: Tuple, (X,Y) with X standing for a list of encrypted (CKKS vectors). Features of the data on which predictions will be made, (forward propagation) and then the gradient will be computed (backpropagation)
+                                  and Y standing for a list of encrypted CKKS vectors. Label of the data on which the gradient will be computed (backpropagation)
+        :return:
+                Tuple with 3 CKKS vectors. Encrypted batch_gradient for weight and bias, and batch predictions.
+        """
+        return self.forward_backward(*arg)
+
+    def forward_backward(self, X, Y):
+        """
+        Perform forward propagation, and then backward propagation.
+
+        :param X: list of encrypted (CKKS vectors). Features of the data on which predictions will be made, (forward propagation) and then the gradient will be computed (backpropagation)
+        :param Y: list of encrypted CKKS vectors. Label of the data on which the gradient will be computed (backpropagation)
+        :return: : Tuple with 3 CKKS vectors. Encrypted batch_gradient for weight and bias, and batch predictions.
+
+        """
+        predictions = self.forward(X)
+        grads = LogisticRegressionHE.backward(X, predictions, Y)
+        return grads[0], grads[1], predictions
+
     def fit(self, X, Y):
         """
         Train the model over encrypted data.
@@ -236,8 +216,22 @@ class LogisticRegressionHE:
 
             self.weight = self.refresh(self.weight)
             self.bias = self.refresh(self.bias)
-            
-            directions = [forward_backward_wrapper(i) for i in batches] #this aims to be replace by multiprocessing
+            args = [(self.weight, self.bias, x[0], x[1]) for x in batches]
+
+            if self.n_jobs > 1:
+                try:
+                    process = multiprocessing.Pool(
+                        processes=self.n_jobs)  # can be done while waiting for the refreshed weight
+                    multiprocess_results = process.map_async(self.forward_backward_wrapper, args)
+                    process.close()
+                    process.join()
+                    directions = multiprocess_results.get()
+                    self.logger.info("Multiprocessing worked !")
+                except:
+                    self.logger.warning("One tenseal object cannot be pickle, aborting the use of multiprocessing.")
+                    directions = [self.forward_backward_wrapper(i) for i in args]
+            else:
+                directions = [self.forward_backward_wrapper(i) for i in args]
 
             direction_weight, direction_bias = 0, 0
             predictions = []
@@ -261,7 +255,7 @@ class LogisticRegressionHE:
                 self.weight = self.refresh(self.weight)
                 self.bias = self.refresh(self.bias)
                 self.loss_list.append(self.loss(predictions, Y))
-                self.logger.info( "Starting computation of the loss ...")
+                self.logger.info("Starting computation of the loss ...")
                 self.logger.info('Loss : ' + str(self.loss_list[-1]) + ".")
             if self.save_weight > 0 and self.iter % self.save_weight == 0:
                 self.weight_list.append(self.weight)
