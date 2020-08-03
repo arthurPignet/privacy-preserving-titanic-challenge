@@ -20,10 +20,11 @@ def worker(input_queue, output_queue):
 # noinspection PyGlobalUndefined
 def initialization(*args):
     """
-    :param:tuple : (b_context, b_X, b_X)
+    :param:tuple : (b_context, b_X, b_X,keys)
             b_context: binary representation of the context. context.serialize()$
             b_X : list of binary representations of samples from CKKS vectors format
             b_Y : list of binary representations of labels from CKKS vectors format
+            keys : keys of the samples which are passed to the subprocess. the local b_X[i] is the global X[keys[i]]. Useful to map predictions to true labels 
     This function is the first one to be passed in the input_queue queue of the process.
     It first deserialaze the context, passing it global,
     in the memory space allocated to the process
@@ -39,6 +40,8 @@ def initialization(*args):
     global local_Y
     local_X = [ts.ckks_vector_from(context, i) for i in b_X]
     local_Y = [ts.ckks_vector_from(context, i) for i in b_Y]
+    global local_keys
+    local_keys = args[3]
     return 'Initialization done for process %s. Len of data : %i' % (
         multiprocessing.current_process().name, len(local_X))
 
@@ -110,7 +113,7 @@ def forward_backward(*args):
     b_grad_weight = grads[0].serialize()
     b_grad_bias = grads[1].serialize()
     b_predictions = [pred.serialize() for pred in predictions]
-    return (b_grad_weight, b_grad_bias, b_predictions)
+    return (b_grad_weight, b_grad_bias, b_predictions, local_keys)
 
 
 class LogisticRegressionHE:
@@ -203,7 +206,7 @@ class LogisticRegressionHE:
 
             self : model
             Y : encrypted labels of the dataset on which the loss will be computed
-            enc_predictions : encrypted model predictions on the dataset on which the loss will be computed
+            enc_predictions : iterator of encrypted model predictions on the dataset on which the loss will be computed
                               One can denote that the forward propagation (predictions) has to be done before.
             :returns
             ------------
@@ -216,9 +219,9 @@ class LogisticRegressionHE:
         self.bias = self.refresh(self.bias)
         inv_n = 1 / len(Y)
         res = (self.reg_para * inv_n / 2) * (self.weight.dot(self.weight) + self.bias * self.bias)
-        for i in range(len(enc_predictions)):
-            res -= Y[i] * self.__log(enc_predictions[i]) * inv_n
-            res -= (1 - Y[i]) * self.__log(1 - enc_predictions[i]) * inv_n
+        for y, pred in zip(Y,enc_predictions):
+            res -= y * self.__log(pred) * inv_n
+            res -= (1 - y) * self.__log(1 - pred) * inv_n
         return res
 
     def accuracy(self, unencrypted_X=None, unencrypted_Y=None):
@@ -323,18 +326,20 @@ class LogisticRegressionHE:
         """
         self.logger.info("Starting serialization of data")
         ser_time = time.time()
+        keys = [[] for _ in range(self.n_jobs)]
         b_X = [[] for _ in range(self.n_jobs)]
         b_Y = [[] for _ in range(self.n_jobs)]
         for i in range(len(X)):
             b_X[i % self.n_jobs].append(X[i].serialize())
             b_Y[i % self.n_jobs].append(Y[i].serialize())
+            keys[i % self.n_jobs].append(i)
         self.logger.info("Data serialization done in %s seconds" %(time.time()-ser_time))
         inv_n = (1 / len(Y))
         self.logger.info("Initialization of %d workers" %self.n_jobs)
         init_work_timer = time.time()
         list_queue_in = []
         queue_out = multiprocessing.Queue()
-        init_tasks = [(initialization, (self.b_context, x, y)) for x, y in zip(b_X, b_Y)]
+        init_tasks = [(initialization, (self.b_context, x, y, key)) for x, y, key in zip(b_X, b_Y, keys)]
         for init in init_tasks:
             list_queue_in.append(multiprocessing.Queue())
             list_queue_in[-1].put(init)
@@ -355,14 +360,14 @@ class LogisticRegressionHE:
             for q in list_queue_in:
                 q.put((forward_backward, (b_weight, b_bias,)))
             direction_weight, direction_bias = 0, 0
-            predictions = []
+            b_predictions = [0 for _ in range(len(X))]
             for _ in range(self.n_jobs):
                 log_out.append(queue_out.get())
                 direction_weight += ts.ckks_vector_from(self.context, log_out[-1][0])
                 direction_bias += ts.ckks_vector_from(self.context, log_out[-1][1])
-                for i in log_out[-1][2]:
-                    predictions.append(i)
-
+                for pred, key in zip(log_out[-1][2], log_out[-1][3]):
+                    b_predictions[key]=pred
+                             
             direction_weight = (direction_weight * self.lr * inv_n) + (self.weight * (self.lr * inv_n * self.reg_para))
             direction_bias = direction_bias * self.lr * inv_n + (self.bias * (self.lr * inv_n * self.reg_para))
 
@@ -376,7 +381,7 @@ class LogisticRegressionHE:
             if self.verbose > 0 and self.iter % self.verbose == 0:
                 self.weight = self.refresh(self.weight)
                 self.bias = self.refresh(self.bias)
-                self.loss_list.append(self.loss(predictions, Y))
+                self.loss_list.append(self.loss(Y,(ts.ckks_vector_from(self.context, pred) for pred in b_predictions)))
                 self.logger.info("Starting computation of the loss ...")
                 self.logger.info('Loss : ' + str(self.loss_list[-1]) + ".")
             if self.save_weight > 0 and self.iter % self.save_weight == 0:

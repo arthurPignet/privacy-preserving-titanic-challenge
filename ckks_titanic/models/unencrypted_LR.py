@@ -235,7 +235,7 @@ class LogisticRegression:
                     self.iter, time.time() - timer_iter))
 
             if self.verbose > 0 and self.iter % self.verbose == 0:
-                self.loss_list.append(self.loss(predictions, Y))
+                self.loss_list.append(self.loss(Y, predictions))
                 self.true_loss_list.append(self.true_loss(X, Y))
                 self.logger.info("Starting computation of the loss ...")
                 self.logger.info('Loss : ' + str(self.loss_list[-1]) + ".")
