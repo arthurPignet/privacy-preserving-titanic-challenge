@@ -1,6 +1,114 @@
 import logging
 import multiprocessing
 import time
+import tenseal as ts
+
+
+# multiprocessing utils functions
+
+def worker(input_queue, output_queue):
+    """
+    This functions turns on the process until a string 'STOP' is found in the input_queue queue
+
+    It takes every couple (function, arguments of the functions) from the input_queue queue, and put the result into the output queue
+    """
+    for func, args in iter(input_queue.get, 'STOP'):
+        result = func(*args)
+        output_queue.put(result)
+
+
+# noinspection PyGlobalUndefined
+def initialization(*args):
+    """
+    :param:tuple : (b_context, b_X, b_X)
+            b_context: binary representation of the context. context.serialize()$
+            b_X : list of binary representations of samples from CKKS vectors format
+            b_Y : list of binary representations of labels from CKKS vectors format
+    This function is the first one to be passed in the input_queue queue of the process.
+    It first deserialaze the context, passing it global,
+    in the memory space allocated to the process
+    Then the batch is also deserialize, using the context,
+    to generate a list of CKKS vector which stand for the encrypted samples on which the proces will work
+    """
+    b_context = args[0]
+    b_X = args[1]
+    b_Y = args[2]
+    global context
+    context = ts.context_from(b_context)
+    global local_X
+    global local_Y
+    local_X = [ts.ckks_vector_from(context, i) for i in b_X]
+    local_Y = [ts.ckks_vector_from(context, i) for i in b_Y]
+    return 'Initialization done for process %s. Len of data : %i' % (
+        multiprocessing.current_process().name, len(local_X))
+
+
+def forward_backward(*args):
+    b_weight = args[0]
+    b_bias = args[1]
+
+    def sigmoid(enc_x, mult_coeff=1):
+        """
+            Sigmoid implementation
+            We use the polynomial approximation of degree 3
+            sigmoid(x) = 0.5 + 0.197 * x - 0.004 * x^3
+            from https://eprint.iacr.org/2018/462.pdf
+
+            :param enc_x:
+            :param mult_coeff: The return is equivalent to sigmoid(x) * mult_coeff, but save one homomorph multiplication
+            :return: CKKS vector (result of sigmoid(x))
+        """
+        poly_coeff = [0.5, 0.197, 0, -0.004]
+        return enc_x.polyval([i * mult_coeff for i in poly_coeff])
+
+    def forward(local_weight, local_bias, vec, mult_coeff=1):
+        """
+            Compute forward propagation on a CKKS vector (or a list of CKKS vectors)
+            :param local_bias: encrypted bias used in forward propagation
+            :param local_weight: encrypted weight used in forward propagation
+            :param vec: CKKS vector or list of CKKS vector on which we want to make local_predictions (ie forward propagation
+            :param mult_coeff: The return is equivalent to forward(x) * mult_coeff, but save one homomorph multiplication
+            :return: encrypted prediction or list of encrypted local_predictions
+        """
+
+        if type(vec) == list:
+            temp = [i.dot(local_weight) + local_bias for i in vec]
+            return [sigmoid(i, mult_coeff=mult_coeff) for i in temp]
+        else:
+            res = vec.dot(local_weight) + local_bias
+            return sigmoid(res, mult_coeff=mult_coeff)
+
+    def backward(X, local_predictions, Y):
+        """
+            Compute the backpropagation on a given encrypted batch
+            :param X: list of encrypted (CKKS vectors). Features of the data on which the gradient will be computed (backpropagation)
+            :param local_predictions: list of encrypted CKKS vectors. Label predictions (forward propagation) on the data on which the gradient will be computed (backpropagation)
+            :param Y: list of encrypted CKKS vectors. Label of the data on which the gradient will be computed (backpropagation)
+            :return: Tuple of 2 CKKS vectors. Encrypted direction of descent for weight and bias"
+        """
+        if type(X) == list:
+            err = local_predictions[0] - Y[0]
+            grad_weight = X[0] * err
+            grad_bias = err
+            for i in range(1, len(X)):
+                err = local_predictions[i] - Y[i]
+                grad_weight += X[i] * err
+                grad_bias += err
+            return grad_weight, grad_bias
+        else:
+            err = local_predictions - Y
+            grad_weight = X * err
+            grad_bias = err
+
+            return grad_weight, grad_bias
+
+    bias = ts.ckks_vector_from(context, b_bias)
+    weight = ts.ckks_vector_from(context, b_weight)
+
+    predictions = forward(local_bias=bias, local_weight=weight, vec=local_X)
+    grads = backward(local_X, predictions, local_Y)
+
+    return (grads[0], grads[1], predictions)
 
 
 class LogisticRegressionHE:
@@ -13,6 +121,7 @@ class LogisticRegressionHE:
                  init_weight,
                  init_bias,
                  refresh_function,
+                 context,
                  confidential_kwarg,
                  accuracy=None,
                  learning_rate=1,
@@ -50,6 +159,7 @@ class LogisticRegressionHE:
         self.refresh_function = refresh_function
         self.confidential_kwarg = confidential_kwarg
         self.accuracy_function = accuracy
+        self.context = context
 
         self.verbose = verbose
         self.save_weight = save_weight
@@ -59,7 +169,9 @@ class LogisticRegressionHE:
         self.reg_para = reg_para
         self.lr = learning_rate
         self.mr = momentum_rate
+
         self.n_jobs = n_jobs
+        self.b_context = context.serialize()
 
         if verbose > 0:
             self.loss_list = []
@@ -208,25 +320,43 @@ class LogisticRegressionHE:
 
         """
 
-        batches = [(x, y) for x, y in zip(X, Y)]
+        b_X = [[] for _ in range(self.n_jobs)]
+        b_Y = [[] for _ in range(self.n_jobs)]
+        for i in range(len(X)):
+            b_X[i % self.n_jobs].append(X[i].serialize())
+            b_Y[i % self.n_jobs].append(Y[i].serialize())
+
         inv_n = (1 / len(Y))
+
+        list_queue_in = []
+        queue_out = multiprocessing.Queue()
+        init_tasks = [[(initialization, (self.b_context, x, y)) for x, y in zip(b_X, b_Y)]]
+        for init in init_tasks:
+            list_queue_in.append(multiprocessing.Queue())
+            list_queue_in[-1].put(init)
+            multiprocessing.Process(target=worker, args=(list_queue_in[-1], queue_out)).start()
+        log_out = []
+        for _ in range(self.n_jobs):
+            log_out.append(queue_out.get())
+            logging.info(log_out[-1])
 
         while self.iter < self.num_iter:
             timer_iter = time.time()
-
             self.weight = self.refresh(self.weight)
             self.bias = self.refresh(self.bias)
 
-            directions = [self.forward_backward_wrapper(i) for i in batches]
-            # this aims to be replace by multiprocessing
-
+            b_weight = self.weight.serialize()
+            b_bias = self.bias.serialize()
+            for q in list_queue_in:
+                q.put((forward_backward, (b_weight, b_bias,)))
             direction_weight, direction_bias = 0, 0
             predictions = []
-
-            for batch_gradient_weight, batch_gradient_bias, prediction in directions:
-                direction_weight += batch_gradient_weight
-                direction_bias += batch_gradient_bias
-                predictions.append(prediction)
+            for _ in range(self.n_jobs):
+                log_out.append(queue_out.get())
+                direction_weight += ts.ckks_vector_from(self.context, log_out[-1][0])
+                direction_bias += ts.ckks_vector_from(self.context, log_out[-1][1])
+                for i in log_out[-1][2]:
+                    predictions.append(i)
 
             direction_weight = (direction_weight * self.lr * inv_n) + (self.weight * (self.lr * inv_n * self.reg_para))
             direction_bias = direction_bias * self.lr * inv_n + (self.bias * (self.lr * inv_n * self.reg_para))
