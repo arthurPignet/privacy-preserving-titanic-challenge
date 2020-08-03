@@ -107,8 +107,10 @@ def forward_backward(*args):
 
     predictions = forward(local_bias=bias, local_weight=weight, vec=local_X)
     grads = backward(local_X, predictions, local_Y)
-
-    return (grads[0], grads[1], predictions)
+    b_grad_weight = grads[0].serialize()
+    b_grad_bias = grads[1].serialize()
+    b_predictions = [pred.serialize() for pred in predictions]
+    return (b_grad_weight, b_grad_bias, b_predictions)
 
 
 class LogisticRegressionHE:
@@ -319,18 +321,20 @@ class LogisticRegressionHE:
         :param Y: list of CKKS vectors: encrypted labels (train set)
 
         """
-
+        self.logger.info("Starting serialization of data")
+        ser_time = time.time()
         b_X = [[] for _ in range(self.n_jobs)]
         b_Y = [[] for _ in range(self.n_jobs)]
         for i in range(len(X)):
             b_X[i % self.n_jobs].append(X[i].serialize())
             b_Y[i % self.n_jobs].append(Y[i].serialize())
-
+        self.logger.info("Data serialization done in %s seconds" %(time.time()-ser_time))
         inv_n = (1 / len(Y))
-
+        self.logger.info("Initialization of %d workers" %self.n_jobs)
+        init_work_timer = time.time()
         list_queue_in = []
         queue_out = multiprocessing.Queue()
-        init_tasks = [[(initialization, (self.b_context, x, y)) for x, y in zip(b_X, b_Y)]]
+        init_tasks = [(initialization, (self.b_context, x, y)) for x, y in zip(b_X, b_Y)]
         for init in init_tasks:
             list_queue_in.append(multiprocessing.Queue())
             list_queue_in[-1].put(init)
@@ -339,6 +343,7 @@ class LogisticRegressionHE:
         for _ in range(self.n_jobs):
             log_out.append(queue_out.get())
             logging.info(log_out[-1])
+        self.logger.info("Initialization done in %s seconds" %(time.time()-init_work_timer))
 
         while self.iter < self.num_iter:
             timer_iter = time.time()
