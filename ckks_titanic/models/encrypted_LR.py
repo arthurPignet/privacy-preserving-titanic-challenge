@@ -349,23 +349,30 @@ class LogisticRegressionHE:
             log_out.append(queue_out.get())
             logging.info(log_out[-1])
         self.logger.info("Initialization done in %s seconds" %(time.time()-init_work_timer))
-
+        
+        del b_X
+        del b_Y
+        del self.b_context
+        
         while self.iter < self.num_iter:
+            
             timer_iter = time.time()
+            
             self.weight = self.refresh(self.weight)
             self.bias = self.refresh(self.bias)
-
             b_weight = self.weight.serialize()
             b_bias = self.bias.serialize()
+            
             for q in list_queue_in:
                 q.put((forward_backward, (b_weight, b_bias,)))
+                
             direction_weight, direction_bias = 0, 0
             b_predictions = [0 for _ in range(len(X))]
             for _ in range(self.n_jobs):
-                log_out.append(queue_out.get())
-                direction_weight += ts.ckks_vector_from(self.context, log_out[-1][0])
-                direction_bias += ts.ckks_vector_from(self.context, log_out[-1][1])
-                for pred, key in zip(log_out[-1][2], log_out[-1][3]):
+                child_process_ans=queue_out.get()
+                direction_weight += ts.ckks_vector_from(self.context, child_process_ans[0])
+                direction_bias += ts.ckks_vector_from(self.context, child_process_ans[1])
+                for pred, key in zip(child_process_ans[2], child_process_ans[3]):
                     b_predictions[key]=pred
                              
             direction_weight = (direction_weight * self.lr * inv_n) + (self.weight * (self.lr * inv_n * self.reg_para))
