@@ -40,7 +40,9 @@ class Actor:
         return self.socket.recv(self.packets_size)
 
     def reception(self):
-        return b''.join(iter(self.__packet_reception, self.sentinel))
+        msg=b''.join(iter(self.__packet_reception, self.sentinel))
+        if msg == b'KILL': self.close()
+        return msg
 
     def transmission(self, data):
         """
