@@ -321,8 +321,11 @@ class LogisticRegressionHE:
         b_X = [[] for _ in range(self.n_jobs)]
         b_Y = [[] for _ in range(self.n_jobs)]
 
-        if X[0] is bytes:
+        if type(X[0]) is bytes:
             self.logger.info("Data already serialized")
+            if self.verbose > 1:
+                self.logger.info("Deserialization of the label for the future computations of the loss")
+                Y_loss = [ts.ckks_vector_from(self.context, y) for y in Y]
             for i in range(len(X)):
                 b_X[i % self.n_jobs].append(X[i])
                 b_Y[i % self.n_jobs].append(Y[i])
@@ -330,6 +333,7 @@ class LogisticRegressionHE:
         else:
             self.logger.info("Starting serialization of data")
             ser_time = time.time()
+            Y_loss = Y
             for i in range(len(X)):
                 b_X[i % self.n_jobs].append(X[i].serialize())
                 b_Y[i % self.n_jobs].append(Y[i].serialize())
@@ -388,7 +392,7 @@ class LogisticRegressionHE:
             if self.verbose > 0 and self.iter % self.verbose == 0:
                 self.weight = self.refresh(self.weight)
                 self.bias = self.refresh(self.bias)
-                self.loss_list.append(self.loss(Y, (ts.ckks_vector_from(self.context, pred) for pred in b_predictions)))
+                self.loss_list.append(self.loss(Y_loss, (ts.ckks_vector_from(self.context, pred) for pred in b_predictions)))
                 self.logger.info("Starting computation of the loss ...")
                 self.logger.info('Loss : ' + str(self.loss_list[-1]) + ".")
             if self.save_weight > 0 and self.iter % self.save_weight == 0:
@@ -396,6 +400,13 @@ class LogisticRegressionHE:
                 self.bias_list.append(self.bias)
 
             self.iter += 1
+            
+        for q in list_queue_in:
+            q.put('STOP')    
+        
+        self.weight = self.refresh(self.weight)
+        self.bias = self.refresh(self.bias)
+
         return self
 
     def predict(self, X):
