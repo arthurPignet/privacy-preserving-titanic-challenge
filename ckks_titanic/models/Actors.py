@@ -32,7 +32,7 @@ class Actor:
             conn.bind(('', self.port))
             conn.listen(1)
             self.socket, socket_address = conn.accept()
-            self.logger.info('Connected by', socket_address)
+            self.logger.info('Connected by '+ socket_address[0]+':'+str(socket_address[1]))
             self.socket.send(b'Connection accepted')
 
     def __packet_reception(self):
