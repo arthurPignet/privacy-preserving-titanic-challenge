@@ -47,6 +47,16 @@ def initialization(*args):
 
 
 def forward_backward(*args):
+
+    """
+        Compute the forward then backward propagation on the local part of the dataset (part of the process)
+
+        :param args: arg[0] serialized weight, arg[1] serialized bias
+        :return: serialized grad of weight.
+                 serialized grad of bias.
+                 serialized predictions on the local part of the dataset, computed by the forward propagation.
+                 list of key, int which stand for the id of the data computed (useful for map the predictions)
+    """
     b_weight = args[0]
     b_bias = args[1]
 
