@@ -125,27 +125,24 @@ class LogisticRegressionHE:
     def __init__(self,
                  init_weight,
                  init_bias,
-                 refresh_function,
                  context,
-                 confidential_kwarg,
+                 bob,
                  learning_rate=1,
                  max_epoch=100,
                  reg_para=0.5,
                  verbose=-1,
                  save_weight=-1,
                  n_jobs=1):
-
         """
 
             Constructor
 
 
-            :param context: tenseal context_. Hold the public key, the relin key and the galois key. Those are mandatory to make computation and deserialization
-            :param n_jobs: multiprocessing. Equal to the number of processes that will be created and launched
             :param init_weight: CKKS vector. Initial weight
             :param init_bias: CKKS vector. Initial weight
-            :param refresh_function: function. Refresh ciphertext
-            :param confidential_kwarg: dict. Will be passed as **kwarg to refresh, loss and accuracy functions. Contain confidential data which are needed by those functions.
+            :param context: tenseal context_. Hold the public key, the relin key and the galois key. Those are mandatory to make computation and deserialization
+            :param n_jobs: multiprocessing. Equal to the number of processes that will be created and launched
+            :param bob : Actor, to who the weight will be sent to be refreshed.
             :param learning_rate: float. learning rate
             :param max_epoch: int. number of epoch to be performed
             :param reg_para: float. regularization parameter
@@ -161,9 +158,7 @@ class LogisticRegressionHE:
 
         self.logger = logging.getLogger(__name__)
 
-        self.refresh_function = refresh_function
-        self.confidential_kwarg = confidential_kwarg
-
+        self.bob = bob
         if type(context) is bytes:
             self.context = ts.context_from(context)
             self.b_context = context
@@ -189,13 +184,18 @@ class LogisticRegressionHE:
         self.weight = init_weight
         self.bias = init_bias
 
-    def refresh(self, vector):
+    def refresh(self, vector, return_bin=False):
         """
             The method refresh the depth of a ciphertext. It call the refresh function which aims to refresh ciphertext by preserving privacy
+            :param return_bin: Boolean. If set to True, the function will return the serialized (binary) refreshed vector
             :param vector: CKKS vector, ciphertext
             :return: refreshed CKKS vector
         """
-        return self.refresh_function(vector, **self.confidential_kwarg)
+        self.bob.transmission(vector.serialize())
+        if return_bin:
+            return self.bob.reception()
+        else:
+            return ts.ckks_vector_from(self.context, self.bob.reception())
 
     def loss(self, Y, enc_predictions):
         """
@@ -261,31 +261,6 @@ class LogisticRegressionHE:
             res = vec.dot(self.weight) + self.bias
             return LogisticRegressionHE.sigmoid(res, mult_coeff=mult_coeff)
 
-    @staticmethod
-    def backward(X, predictions, Y):
-        """
-            Compute the backpropagation on a given encrypted batch
-            :param X: list of encrypted (CKKS vectors). Features of the data on which the gradient will be computed (backpropagation)
-            :param predictions: list of encrypted CKKS vectors. Label predictions (forward propagation) on the data on which the gradient will be computed (backpropagation)
-            :param Y: list of encrypted CKKS vectors. Label of the data on which the gradient will be computed (backpropagation)
-            :return: Tuple of 2 CKKS vectors. Encrypted direction of descent for weight and bias"
-        """
-        if type(X) == list:
-            err = predictions[0] - Y[0]
-            grad_weight = X[0] * err
-            grad_bias = err
-            for i in range(1, len(X)):
-                err = predictions[i] - Y[i]
-                grad_weight += X[i] * err
-                grad_bias += err
-            return grad_weight, grad_bias
-        else:
-            err = predictions - Y
-            grad_weight = X * err
-            grad_bias = err
-
-            return grad_weight, grad_bias
-
     def fit(self, X, Y):
         """
         Train the model over encrypted data.
@@ -297,14 +272,25 @@ class LogisticRegressionHE:
         keys = [[] for _ in range(self.n_jobs)]
         b_X = [[] for _ in range(self.n_jobs)]
         b_Y = [[] for _ in range(self.n_jobs)]
+        Y_loss = Y
 
-        self.logger.info("Starting serialization of data")
-        ser_time = time.time()
-        for i in range(len(X)):
-            b_X[i % self.n_jobs].append(X[i].serialize())
-            b_Y[i % self.n_jobs].append(Y[i].serialize())
-            keys[i % self.n_jobs].append(i)
-        self.logger.info("Data serialization done in %s seconds" % (time.time() - ser_time))
+        if type(X[0]) is bytes:
+            self.logger.info("Data already serialized")
+            if self.verbose > 1:
+                self.logger.info("Deserialization of labels for the future computations of the loss")
+                Y_loss = [ts.ckks_vector_from(self.context, y) for y in Y]
+            for i in range(len(X)):
+                b_X[i % self.n_jobs].append(X[i])
+                b_Y[i % self.n_jobs].append(Y[i])
+                keys[i % self.n_jobs].append(i)
+        else:
+            self.logger.info("Starting serialization of data")
+            ser_time = time.time()
+            for i in range(len(X)):
+                b_X[i % self.n_jobs].append(X[i].serialize())
+                b_Y[i % self.n_jobs].append(Y[i].serialize())
+                keys[i % self.n_jobs].append(i)
+            self.logger.info("Data serialization done in %s seconds" % (time.time() - ser_time))
         inv_n = (1 / len(Y))
         self.logger.info("Initialization of %d workers" % self.n_jobs)
         init_work_timer = time.time()
@@ -328,10 +314,10 @@ class LogisticRegressionHE:
 
             timer_iter = time.time()
 
-            self.weight = self.refresh(self.weight)
-            self.bias = self.refresh(self.bias)
-            b_weight = self.weight.serialize()
-            b_bias = self.bias.serialize()
+            b_weight = self.refresh(self.weight, return_bin=True)
+            b_bias = self.refresh(self.bias, return_bin=True)
+            self.weight = ts.ckks_vector_from(self.context, b_weight)
+            self.bias = ts.ckks_vector_from(self.context, b_bias)
 
             for q in list_queue_in:
                 q.put((forward_backward, (b_weight, b_bias,)))
@@ -342,8 +328,8 @@ class LogisticRegressionHE:
                 child_process_ans = queue_out.get()
                 direction_weight += ts.ckks_vector_from(self.context, child_process_ans[0])
                 direction_bias += ts.ckks_vector_from(self.context, child_process_ans[1])
-                for pred, key in zip(child_process_ans[2], child_process_ans[3]):
-                    b_predictions[key] = pred
+                for prediction, key in zip(child_process_ans[2], child_process_ans[3]):
+                    b_predictions[key] = prediction
 
             direction_weight = (direction_weight * self.lr * inv_n) + (self.weight * (self.lr * inv_n * self.reg_para))
             direction_bias = direction_bias * self.lr * inv_n + (self.bias * (self.lr * inv_n * self.reg_para))
@@ -358,7 +344,8 @@ class LogisticRegressionHE:
             if self.verbose > 0 and self.iter % self.verbose == 0:
                 self.weight = self.refresh(self.weight)
                 self.bias = self.refresh(self.bias)
-                self.loss_list.append(self.loss(Y, (ts.ckks_vector_from(self.context, prediction) for prediction in b_predictions)))
+                self.loss_list.append(
+                    self.loss(Y_loss, (ts.ckks_vector_from(self.context, prediction) for prediction in b_predictions)))
                 self.logger.info("Starting computation of the loss ...")
                 self.logger.info('Loss : ' + str(self.loss_list[-1]) + ".")
             if self.save_weight > 0 and self.iter % self.save_weight == 0:

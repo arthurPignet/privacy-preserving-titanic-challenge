@@ -15,7 +15,6 @@ class LogisticRegression:
                  init_weight,
                  init_bias,
                  learning_rate=1,
-                 momentum_rate=0,
                  max_epoch=100,
                  reg_para=0.5,
                  n_jobs=None,
@@ -30,8 +29,7 @@ class LogisticRegression:
 
             :param init_weight : Initial weight
             :param init_bias : Initial weight
-            :param learning_rate: float. see Nesterov Accelerated Gradient Optimizer
-            :param momentum_rate: float. see Nesterov Accelerated Gradient Optimizer
+            :param learning_rate: float. see gradient descent optimizer
             :param max_epoch: int. number of epoch to be performed
             :param reg_para: float. regularization parameter
             :param verbose: int. number of epoch were the loss is not computed, nor printed.
@@ -53,7 +51,6 @@ class LogisticRegression:
         self.nb_epoch = max_epoch
         self.reg_para = reg_para
         self.lr = learning_rate
-        self.mr = momentum_rate
 
         if save_weight > 0:
             self.weight_list = []
