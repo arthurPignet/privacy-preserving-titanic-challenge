@@ -15,4 +15,4 @@ scikit-learn~=0.22.1
 setuptools~=47.3.1
 click~=7.1.2
 numpy~=1.18.5
-tenseal~=0.1.1a0
+#tenseal~=0.1.1a0
