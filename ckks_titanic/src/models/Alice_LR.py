@@ -184,6 +184,14 @@ class LogisticRegressionHE:
         self.weight = init_weight
         self.bias = init_bias
 
+    def set_bob(self, bob):
+        """
+
+        :param bob: Actor. Bob is needed for refreshing the weight, so as to fit the model.
+                    If you do not need to fit the model (for instance if you load an already trained model) you can make predictions without BOB.
+        """
+        self.bob = bob
+
     def refresh(self, vector, return_bin=False):
         """
             The method refresh the depth of a ciphertext. It call the refresh function which aims to refresh ciphertext by preserving privacy
@@ -191,11 +199,17 @@ class LogisticRegressionHE:
             :param vector: CKKS vector, ciphertext
             :return: refreshed CKKS vector
         """
-        self.bob.transmission(vector.serialize())
-        if return_bin:
-            return self.bob.reception()
-        else:
-            return ts.ckks_vector_from(self.context, self.bob.reception())
+        try:
+            self.bob.transmission(vector.serialize())
+            if return_bin:
+                return self.bob.reception()
+            else:
+                return ts.ckks_vector_from(self.context, self.bob.reception())
+        except AttributeError:
+            self.logger.critical('Bob is not provided, nobody is listening for refreshing the weight. '
+                                 'You need to provide an Actor (see .setbob() method) '
+                                 'and be sure that the actor is ready to refresh weight (see the 3-ap-Bob notebook')
+            raise
 
     def loss(self, Y, enc_predictions):
         """
@@ -372,3 +386,44 @@ class LogisticRegressionHE:
 
     def __call__(self, *args, **kwargs):
         return self.forward(*args, **kwargs)
+
+    def __getstate__(self):
+
+        attributes = {
+            'b_context': self.b_context,
+            'b_weight': self.weight.serialize(),
+            'b_bias': self.bias.serialize(),
+            'verbose': self.verbose,
+            'save_weight': self.save_weight,
+            'num_epoch': self.num_iter,
+            'n_jobs': self.n_jobs,
+            'reg_para': self.reg_para,
+            'learning_rate': self.lr,
+            'iter': self.iter
+        }
+        if self.verbose > 0:
+            attributes['loss_list'] = [loss.Serialize() for loss in self.loss_list]
+        if self.save_weight > 0:
+            attributes['weight_list'] = [w.serialize() for w in self.weight_list]
+            attributes['bias_list'] = [b.serialize() for b in self.bias_list]
+
+        return attributes
+
+    def __setstate__(self, attributes):
+
+        self.b_context = attributes['b_context']
+        self.context = ts.context_from(self.b_context)
+        self.weight = ts.ckks_vector_from(self.context, attributes['b_weight'])
+        self.bias = ts.ckks_vector_from(self.context, attributes['b_bias'])
+        self.verbose = attributes['verbose']
+        self.save_weight = attributes['save_weight']
+        self.num_iter = attributes['num_epoch']
+        self.n_jobs = attributes['n_jobs']
+        self.reg_para = attributes['reg_para']
+        self.lr = attributes['learning_rate']
+        self.iter = attributes['iter']
+        if self.verbose > 0:
+            self.loss_list = [ts.ckks_vector_from(self.context, loss) for loss in attributes['loss_list']]
+        if self.save_weight > 0:
+            self.weight_list = [ts.ckks_vector_from(self.context, w) for w in attributes['weight_list']]
+            self.bias_list = [ts.ckks_vector_from(self.context, b) for b in attributes['bias_list']]
