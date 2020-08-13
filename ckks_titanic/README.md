@@ -103,14 +103,28 @@ $ pip install .
 ```
 
 More details to perform such installation (ie build it from source) can be found directly here [TenSEAL](https://github.com/OpenMined/TenSEAL)
-
+### Other dependencies
+ 
 More generally, everything you need can be installed with pip, from the requirement.txt file at the root of the repository: 
 
 ```bash
 pip install -r requirement.txt
 ```
 
+## Tested configuration
+
+The project has been ran on a Google Cloud Computing virtual machine, with the following configuration:
+
+- **Machine configuration** : c2-standard-8 (8 vCPUs, Intel Cascade Lake, 32 GB memory)
+- **Boot disk** : 100 GB standard persistent disk
+- **Image** : Debian GNU/Linux 10 (buster)
+
+Please denote that the project needs lots of memory (I had pick over 25 Gb). 
+
+****This configuration is absolutely not mandatory, it is only an example of a configuration where the project was built and successfully tested.****
 
 --------
+
+
 
 <p><small>Project based on the <a target="_blank" href="http://git.equancy.io/tools/cookiecutter-data-science-project/">cookiecutter data science project template</a>. #cookiecutterdatascience</small></p>
