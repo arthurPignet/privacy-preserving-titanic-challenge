@@ -254,3 +254,60 @@
 [I 16:08:44.226 LabApp] Adapting to protocol v5.1 for kernel 0250c6f6-c316-47b1-bf0e-314a8dbb77bd
 [I 16:08:44.228 LabApp] Discarding 10 buffered messages for 0250c6f6-c316-47b1-bf0e-314a8dbb77bd:aadbb498-33c9-4ef9-b1db-0dac32421c62
 [I 16:08:44.260 LabApp] Adapting to protocol v5.1 for kernel 0250c6f6-c316-47b1-bf0e-314a8dbb77bd
+[I 09:52:20.362 LabApp] JupyterLab extension loaded from /home/apignet/anaconda3/lib/python3.7/site-packages/jupyterlab
+[I 09:52:20.362 LabApp] JupyterLab application directory is /home/apignet/anaconda3/share/jupyter/lab
+[W 09:52:20.363 LabApp] JupyterLab server extension not enabled, manually loading...
+[I 09:52:20.365 LabApp] JupyterLab extension loaded from /home/apignet/anaconda3/lib/python3.7/site-packages/jupyterlab
+[I 09:52:20.365 LabApp] JupyterLab application directory is /home/apignet/anaconda3/share/jupyter/lab
+[I 09:52:20.365 LabApp] Serving notebooks from local directory: /home/apignet/homomorphic-encryption
+[I 09:52:20.365 LabApp] The Jupyter Notebook is running at:
+[I 09:52:20.365 LabApp] http://(he2-test or 127.0.0.1):8888/
+[I 09:52:20.365 LabApp] Use Control-C to stop this server and shut down all kernels (twice to skip confirmation).
+[W 09:52:23.194 LabApp] Clearing invalid/expired login cookie username-34-76-171-62-8888
+[W 09:52:23.195 LabApp] Forbidden
+[W 09:52:23.196 LabApp] 403 GET /api/sessions?_=1597308684384 (159.180.248.170) 2.03ms referer=http://34.76.171.62:8888/tree/homomorphic-encryption/ckks_titanic
+[W 09:52:23.196 LabApp] Clearing invalid/expired login cookie username-34-76-171-62-8888
+[W 09:52:23.197 LabApp] Forbidden
+[W 09:52:23.197 LabApp] 403 GET /api/terminals?_=1597308684385 (159.180.248.170) 0.66ms referer=http://34.76.171.62:8888/tree/homomorphic-encryption/ckks_titanic
+[W 09:52:23.228 LabApp] Clearing invalid/expired login cookie username-34-76-171-62-8888
+[W 09:52:23.228 LabApp] Clearing invalid/expired login cookie username-34-76-171-62-8888
+[I 09:52:23.229 LabApp] 302 GET /tree/homomorphic-encryption/ckks_titanic (159.180.248.170) 0.93ms
+[W 09:52:27.689 LabApp] 401 POST /login?next=%2Ftree%2Fhomomorphic-encryption%2Fckks_titanic (159.180.248.170) 1.51ms referer=http://34.76.171.62:8888/login?next=%2Ftree%2Fhomomorphic-encryption%2Fckks_titanic
+[I 09:52:33.218 LabApp] 302 POST /login?next=%2Ftree%2Fhomomorphic-encryption%2Fckks_titanic (159.180.248.170) 0.94ms
+[W 09:52:33.237 LabApp] 404 GET /tree/homomorphic-encryption/ckks_titanic (159.180.248.170) 5.00ms referer=http://34.76.171.62:8888/login?next=%2Ftree%2Fhomomorphic-encryption%2Fckks_titanic
+[I 09:52:37.908 LabApp] 302 GET / (159.180.248.170) 0.40ms
+[W 09:52:39.021 LabApp] Could not determine jupyterlab build status without nodejs
+[W 09:52:39.210 LabApp] 404 GET /lab/api/workspaces/lab?1597312359138 (159.180.248.170): Workspace 'lab' ('lab-a511') not found
+[W 09:52:39.210 LabApp] Workspace 'lab' ('lab-a511') not found
+[W 09:52:39.210 LabApp] 404 GET /lab/api/workspaces/lab?1597312359138 (159.180.248.170) 1.83ms referer=http://34.76.171.62:8888/lab?
+[I 09:52:54.579 LabApp] Writing notebook-signing key to /home/apignet/.local/share/jupyter/notebook_secret
+[W 09:52:54.581 LabApp] Notebook ckks_titanic/notebooks/1-ap- processing.ipynb is not trusted
+[I 09:52:55.935 LabApp] Kernel started: 737aa429-f754-471c-8acb-e5b83bd51b1b
+[I 09:52:56.799 LabApp] Adapting to protocol v5.1 for kernel 737aa429-f754-471c-8acb-e5b83bd51b1b
+[I 09:52:56.831 LabApp] Adapting to protocol v5.1 for kernel 737aa429-f754-471c-8acb-e5b83bd51b1b
+[W 09:53:26.731 LabApp] Notebook ckks_titanic/notebooks/2-ap-main.ipynb is not trusted
+[I 09:53:29.756 LabApp] Kernel started: b7d2be0e-3b00-410a-94ee-4339f6d14aae
+[I 09:53:30.548 LabApp] Adapting to protocol v5.1 for kernel b7d2be0e-3b00-410a-94ee-4339f6d14aae
+[W 09:54:05.348 LabApp] Notebook ckks_titanic/notebooks/3-ap-Alice.ipynb is not trusted
+[I 09:54:06.744 LabApp] Kernel started: d73133aa-8657-4436-85a2-1b2dbea385ad
+[I 09:54:07.551 LabApp] Adapting to protocol v5.1 for kernel d73133aa-8657-4436-85a2-1b2dbea385ad
+[W 09:54:32.008 LabApp] Notebook ckks_titanic/notebooks/3-ap-Bob.ipynb is not trusted
+[I 09:54:33.852 LabApp] Kernel started: 2ff45116-2a95-459e-a8fa-80e12020c6aa
+[I 09:54:34.700 LabApp] Adapting to protocol v5.1 for kernel 2ff45116-2a95-459e-a8fa-80e12020c6aa
+[I 09:54:55.693 LabApp] Saving file at /ckks_titanic/notebooks/1-ap- processing.ipynb
+[W 09:54:55.694 LabApp] Notebook ckks_titanic/notebooks/1-ap- processing.ipynb is not trusted
+[I 09:55:12.539 LabApp] Saving file at /ckks_titanic/notebooks/3-ap-Bob.ipynb
+[W 09:55:12.540 LabApp] Notebook ckks_titanic/notebooks/3-ap-Bob.ipynb is not trusted
+[I 09:55:28.446 LabApp] Saving file at /ckks_titanic/notebooks/2-ap-main.ipynb
+[W 09:55:28.447 LabApp] Notebook ckks_titanic/notebooks/2-ap-main.ipynb is not trusted
+[I 09:56:06.145 LabApp] Saving file at /ckks_titanic/notebooks/3-ap-Alice.ipynb
+[W 09:56:06.146 LabApp] Notebook ckks_titanic/notebooks/3-ap-Alice.ipynb is not trusted
+[W 09:56:28.402 LabApp] delete /ckks_titanic/notebooks/alice test socket.ipynb
+[W 09:56:34.844 LabApp] delete /ckks_titanic/notebooks/bob test socket.ipynb
+[W 09:56:40.698 LabApp] delete /ckks_titanic/notebooks/testing serialization and multiprocessing.ipynb
+[W 09:56:54.868 LabApp] delete /ckks_titanic/notebooks/testing the NAG.ipynb
+[W 09:58:45.230 LabApp] Notebook ckks_titanic/notebooks/1-ap-polynomial-approximations.ipynb is not trusted
+[I 09:58:45.652 LabApp] Kernel started: f6375cae-80ee-4706-a1fc-accdeb859011
+[I 09:58:46.505 LabApp] Adapting to protocol v5.1 for kernel f6375cae-80ee-4706-a1fc-accdeb859011
+[I 10:00:45.507 LabApp] Saving file at /ckks_titanic/notebooks/1-ap-polynomial-approximations.ipynb
+[W 10:00:45.508 LabApp] Notebook ckks_titanic/notebooks/1-ap-polynomial-approximations.ipynb is not trusted
