@@ -1,7 +1,22 @@
 CKKS_titanic
 ==============================
 
-Resolving the titanic datascience problem using homomorphic encryption. We use the CKKS scheme implemented in TenSEAL ( see https://github.com/OpenMined/TenSEAL )
+This project implements a solution to the titanic data science problem using homomorphic encryption.
+The Titanic problem from kaggle, Titanic: Machine Learning from Disaster, is a well-known classification problem. The objectif is to predict, from a set of given features, whether or not someone survived to the famous sinking. 
+ 
+Homomorphic encryption is a type of encryption which allows one to make computations over encrypted data without decrypting it.
+Here, we use the CKKS scheme implemented in TenSEAL ( see https://github.com/OpenMined/TenSEAL ). TenSEAL is a open-source python library, written mainly in C++, and build on the top of the Microsoft SEAL library. 
+
+The project can be split in two parts. First we compare three implementations of logistic regression, on  from the scikit-learn library (as temoin), and two homemade logistic regressions, one encrypted and the other unencrypted. 
+We demonstrate that the use of the CKKS scheme does not impact the model performance, but only the memory and time complexities.
+In fact, the same performances as the Scikit-learn implementation can be reach, with numerous epoch of training ( encrypted or unencrypted)
+To speed up the training process, an implementation using multiprocessing is implemented, for encrypted training.
+Moreover a work around batching the data is in progress 
+
+Then, the second part is a fully-private titanic resolution scenario, with two actors. Bob will stand for the data holder, and Alice for the data scientist. 
+Bob will send the encrypted data to Alice, which will train a logistic regression on those. With this trained model, Alice will be able to provide to Bob encrypted predictions. From these predictions, Bob will evaluate the model, and thus can make a kaggle submission. 
+The submission score is compared to a submission score obtained with scikit-learn logistic regression.   
+
 
 Project Organization
 ------------
@@ -19,14 +34,18 @@ Project Organization
     │   ├── processed      <- The final, canonical data sets for modeling.
     │   └── raw            <- The original, immutable data dump.
     │
-    ├── docs               <- A default Sphinx project; see sphinx-doc.org for details
+    ├── docs               <- A default Sphinx project; see sphinx-doc.org for details.
     │
-    ├── models             <- Trained and serialized models
+    ├── models             <- Trained and serialized models.
     │                         
     ├── notebooks          <- Jupyter notebooks. Naming convention is a number (for ordering),
-    │                         the creator's initials, and a short `-` delimited description, e.g.
-    │                         `1.0-rvm-initial-data-exploration`.
-    │
+    │   |                     the creator's initials, and a short `-` delimited description.        
+    │   ├──                <-0-ap-  
+    │   ├──                <- Alice's side. Training a model over encrypted data. The model is then use to predict.
+    │   ├──                <- Bob's side. Process and encrypt the data. Sends them to Alice for training and prediction.
+    │   ├──                <- Data processing and feature engineering.
+    │   └──                <- polynomial approximations of sigmoid and log functions. 
+    |    
     ├── references         <- Data dictionaries, manuals, and all other explanatory materials.
     │
     ├── reports            <- Generated analysis as HTML, PDF, LaTeX, etc.
