@@ -7,14 +7,14 @@ The Titanic problem from kaggle, Titanic: Machine Learning from Disaster, is a w
 Homomorphic encryption is a type of encryption which allows one to make computations over encrypted data without decrypting it.
 Here, we use the CKKS scheme implemented in TenSEAL ( see https://github.com/OpenMined/TenSEAL ). TenSEAL is a open-source python library, written mainly in C++, and build on the top of the Microsoft SEAL library. 
 
-The project can be split in two parts. First we compare three implementations of logistic regression, on  from the scikit-learn library (as temoin), and two homemade logistic regressions, one encrypted and the other unencrypted. 
+The project can be split in two parts. First we compare three implementations of logistic regression, one from the scikit-learn library (as telltale), and two homemade logistic regressions, one encrypted and the other unencrypted. 
 We demonstrate that the use of the CKKS scheme does not impact the model performance, but only the memory and time complexities.
-In fact, the same performances as the Scikit-learn implementation can be reach, with numerous epoch of training ( encrypted or unencrypted)
-To speed up the training process, an implementation using multiprocessing is implemented, for encrypted training.
-Moreover a work around batching the data is in progress 
+In fact, the same performances as the Scikit-learn implementation can be reach, with numerous epoch of training ( encrypted or unencrypted).
+So as to speed up the encrypted training process, an implementation using multiprocessing is implemented.
+Currently, a work around batching the data is in progress 
 
 Then, the second part is a fully-private titanic resolution scenario, with two actors. Bob will stand for the data holder, and Alice for the data scientist. 
-Bob will send the encrypted data to Alice, which will train a logistic regression on those. With this trained model, Alice will be able to provide to Bob encrypted predictions. From these predictions, Bob will evaluate the model, and thus can make a kaggle submission. 
+Bob will send the encrypted data to Alice, which will train a logistic regression on those. With this trained model, Alice will be able to provide to Bob encrypted predictions. From these predictions on both labelled and unlabelled data, Bob will evaluate the model, and thus can decide to use these predictions.He can for instance make a kaggle submission. 
 The submission score is compared to a submission score obtained with scikit-learn logistic regression.   
 
 
@@ -70,13 +70,47 @@ Project Organization
         ├── models             <- Definitions of model classes used in the notebooks 
         │   ├── Alice_LR.py    <-Logistic regression model, used by Alice in the final scenario, notebook 3
         |   ├── encrypted_LR   <-Encrypted homemade logistique regression. Model used in the notebook 2
-        │   └── train_model.py <- Unencrypted copy of the encrypted LR. All the operation and implementation ought to be the same as in encrypted LR. Used in notebook 2, for comparison purposes. 
+        │   └── unencrypted_LR <- Unencrypted copy of the encrypted LR. 
+        |                         All the operation and implementation ought to be the same as in encrypted LR. 
+        |                         Used in the first notebook, for comparison purposes. 
         │
-        └── commmunication  <- Class holding the communication protocol, 
-            └── Actor.py    <- Class based on the module socket, 
-                                to design a proper communication protocole between Alice and Bob
+        └── commmunication  <- Class holding the communication protocol. 
+            └── Actor.py    <- Class based on the module socket. 
+                               Implement a communication protocole between Alice and Bob
      
      
+     
+## Install everything : 
+
+### Homomorphic encryption : TenSEAL 
+
+Most of the project use the TenSEAL library. **Note that you currently need to build tenseal from source, as we use tenseal's features which have not been released yet.**
+Depending on your platform be sure to get the following requirements : 
+- **Linux:** A modern version of GNU G++ (>= 6.0) or Clang++ (>= 5.0).
+- **MacOS:** Xcode toolchain (>= 9.3)
+- **Windows:** Microsoft Visual Studio (>= 10.0.40219.1, Visual Studio 2010 SP1 or later).
+
+You will also need [CMake (3.12 or higher)](https://cmake.org/install/) and [Protocol Buffers](https://developers.google.com/protocol-buffers/docs/downloads) for serialization.
+If you are on Windows, you will first need to build SEAL library using Visual Studio. I recommand to check the instructions in the [TenSEAL README](https://github.com/OpenMined/TenSEAL) and [Building Microsoft SEAL](https://github.com/microsoft/SEAL#windows).
+ 
+Once you made sure to have all the requirements installed, you can clone the tenseal repository, get the submodules, and trigger the installation.
+
+
+```bash
+$ git clone https://github.com/OpenMined/TenSEAL.git
+$ cd cd TenSEAL/
+$ git submodule init
+$ git submodule update
+$ pip install .
+```
+
+More details to perform such installation (ie build it from source) can be found directly here [TenSEAL](https://github.com/OpenMined/TenSEAL)
+
+More generally, everything you need can be installed with pip, from the requirement.txt file at the root of the repository: 
+
+```bash
+pip install -r requirement.txt
+```
 
 
 --------
