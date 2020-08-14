@@ -2,20 +2,20 @@ CKKS_titanic
 ==============================
 
 This project implements a solution to the titanic data science problem using homomorphic encryption.
-The Titanic problem from kaggle, [Titanic: Machine Learning from Disaster](https://www.kaggle.com/c/titanic/), is a well-known classification problem. The objectif is to predict, from a set of given features, whether or not someone survived to the famous sinking. 
+The Titanic problem from Kaggle, [Titanic: Machine Learning from Disaster](https://www.kaggle.com/c/titanic/), is a well-known classification problem. The objective is to predict, from a set of given features, whether or not someone survived to the famous sinking. 
  
 Homomorphic encryption is a type of encryption which allows one to make computations over encrypted data without decrypting it.
-Here, we use the CKKS scheme implemented in TenSEAL ( see https://github.com/OpenMined/TenSEAL ). TenSEAL is a open-source python library, mainly written in C++, and built on the top of the Microsoft SEAL library. 
+Here, we use the CKKS scheme implemented in [TenSEAL](https://github.com/OpenMined/TenSEAL). TenSEAL is an open-source python library, mainly written in C++, and built on top of the Microsoft SEAL library. 
 
 The project can be split in two parts. First we compare three implementations of logistic regression, one from the scikit-learn library (as telltale), and two homemade logistic regressions, one encrypted and the other unencrypted. 
 We demonstrate that the use of the CKKS scheme does not impact the model performance, but only the memory and time complexities.
-In fact, the same performances as the Scikit-learn implementation can be reach, with numerous epoch of training ( encrypted or unencrypted).
-So as to speed up the encrypted training process, an implementation using multiprocessing is implemented.
-Currently, a work around batching the data is in progress 
+In fact, the same performance as the Scikit-learn implementation can be reached, when one increases the number of epochs of training ( encrypted or unencrypted).
+So as to speed up the encrypted training process, a training using multiprocessing is implemented.
+Currently, a work around batching the data is in progress.
 
 Then, the second part is a fully-private titanic resolution scenario, with two actors. Bob will stand for the data holder, and Alice for the data scientist. 
-Bob will send the encrypted data to Alice, which will train a logistic regression on those. With this trained model, Alice will be able to provide to Bob encrypted predictions. From these predictions on both labelled and unlabelled data, Bob will evaluate the model, and thus can decide to use these predictions.He can for instance make a kaggle submission. 
-The submission score is compared to a submission score obtained with scikit-learn logistic regression.   
+Bob will send the encrypted data to Alice, who will train a logistic regression on those. With this trained model, Alice will be able to provide Bob encrypted predictions. From these predictions on both labelled and unlabelled data, Bob will evaluate the model, and thus will decide to use these predictions. He can for instance make a Kaggle submission. 
+The submission score is compared to a submission score obtained with Scikit-learn logistic regression.   
 
 
 Project Organization
@@ -89,7 +89,7 @@ Depending on your platform be sure to get the following requirements :
 - **Windows:** Microsoft Visual Studio (>= 10.0.40219.1, Visual Studio 2010 SP1 or later).
 
 You will also need [CMake (3.12 or higher)](https://cmake.org/install/) and [Protocol Buffers](https://developers.google.com/protocol-buffers/docs/downloads) for serialization.
-If you are on Windows, you will first need to build SEAL library using Visual Studio. I recommand to check the instructions in the [TenSEAL README](https://github.com/OpenMined/TenSEAL) and [Building Microsoft SEAL](https://github.com/microsoft/SEAL#windows).
+If you are on Windows, you will first need to build SEAL library using Visual Studio. I recommend to check the instructions in the [TenSEAL README](https://github.com/OpenMined/TenSEAL) and [Building Microsoft SEAL](https://github.com/microsoft/SEAL#windows).
  
 Once you made sure to have all the requirements installed, you can clone the tenseal repository, get the submodules, and trigger the installation.
 
@@ -119,7 +119,7 @@ The project has been ran on a Google Cloud Computing virtual machine, with the f
 - **Boot disk** : 100 GB standard persistent disk
 - **Image** : Debian GNU/Linux 10 (buster)
 
-Please denote that the project needs lots of memory (I had pick over 25 Gb). 
+Please denote that the project needs lots of memory (I recorded a peak memory of over 27 Gb). 
 
 ****This configuration is absolutely not mandatory, it is only an example of a configuration where the project was built and successfully tested.****
 
