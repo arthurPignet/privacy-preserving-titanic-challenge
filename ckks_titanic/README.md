@@ -96,7 +96,7 @@ Once you made sure to have all the requirements installed, you can clone the ten
 
 ```bash
 $ git clone https://github.com/OpenMined/TenSEAL.git
-$ cd cd TenSEAL/
+$ cd TenSEAL/
 $ git submodule init
 $ git submodule update
 $ pip install .
