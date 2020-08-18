@@ -1,0 +1,8 @@
+crcmod==1.7
+distro-info==0.21
+memory-profiler==0.57.0
+psutil==5.7.2
+python-apt==1.8.4.1
+python-distutils-extra==2.39
+tenseal @ file:///home/apignet/TenSEAL
+unattended-upgrades==0.1

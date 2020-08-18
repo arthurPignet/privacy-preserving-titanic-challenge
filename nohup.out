@@ -396,3 +396,275 @@
 [I 12:36:49.810 LabApp] Saving file at /ckks_titanic/notebooks/Appendix B-ap-polynomial-approximations.ipynb
 [I 12:44:33.745 LabApp] Kernel shutdown: f6375cae-80ee-4706-a1fc-accdeb859011
 [I 12:44:36.188 LabApp] Kernel shutdown: 737aa429-f754-471c-8acb-e5b83bd51b1b
+[I 13:59:03.758 LabApp] Saving file at /ckks_titanic/notebooks/Appendix B-ap-polynomial-approximations.ipynb
+[C 16:40:58.058 LabApp] received signal 15, stopping
+[I 16:40:58.058 LabApp] Shutting down 3 kernels
+[I 16:40:58.160 LabApp] Kernel shutdown: b7d2be0e-3b00-410a-94ee-4339f6d14aae
+[I 16:40:58.160 LabApp] Kernel shutdown: d73133aa-8657-4436-85a2-1b2dbea385ad
+[I 16:40:58.161 LabApp] Kernel shutdown: 2ff45116-2a95-459e-a8fa-80e12020c6aa
+[I 07:52:51.191 LabApp] Writing notebook server cookie secret to /run/user/1001/jupyter/notebook_cookie_secret
+[I 07:52:52.463 LabApp] JupyterLab extension loaded from /home/apignet/anaconda3/lib/python3.7/site-packages/jupyterlab
+[I 07:52:52.463 LabApp] JupyterLab application directory is /home/apignet/anaconda3/share/jupyter/lab
+[W 07:52:52.464 LabApp] JupyterLab server extension not enabled, manually loading...
+[I 07:52:52.465 LabApp] JupyterLab extension loaded from /home/apignet/anaconda3/lib/python3.7/site-packages/jupyterlab
+[I 07:52:52.465 LabApp] JupyterLab application directory is /home/apignet/anaconda3/share/jupyter/lab
+[I 07:52:52.466 LabApp] Serving notebooks from local directory: /home/apignet/homomorphic-encryption
+[I 07:52:52.466 LabApp] The Jupyter Notebook is running at:
+[I 07:52:52.466 LabApp] http://(he2-test or 127.0.0.1):8888/
+[I 07:52:52.466 LabApp] Use Control-C to stop this server and shut down all kernels (twice to skip confirmation).
+[I 07:54:18.279 LabApp] 302 GET / (86.237.172.54) 0.51ms
+[I 07:54:18.355 LabApp] 302 GET /lab? (86.237.172.54) 0.42ms
+[W 07:54:25.683 LabApp] Not allowing login redirect to '/lab?'
+[I 07:54:25.683 LabApp] 302 POST /login?next=%2Flab%3F (86.237.172.54) 1.09ms
+[I 07:54:25.721 LabApp] 302 GET / (86.237.172.54) 0.29ms
+[W 07:54:29.132 LabApp] Could not determine jupyterlab build status without nodejs
+[W 07:54:31.168 LabApp] Notebook ckks_titanic/notebooks/1-ap-Bob.ipynb is not trusted
+[W 07:54:31.237 LabApp] Notebook ckks_titanic/notebooks/Appendix A-ap- processing.ipynb is not trusted
+[W 07:54:31.310 LabApp] Notebook ckks_titanic/notebooks/1-ap-Alice.ipynb is not trusted
+[W 07:54:31.347 LabApp] Notebook ckks_titanic/notebooks/0-ap-encrypted-logistic-regression.ipynb is not trusted
+[I 07:54:32.964 LabApp] Kernel started: c19f4f99-3de8-4ddd-ac92-334705ee9cc2
+[I 07:54:33.349 LabApp] Kernel started: 7e40ec7f-3798-4a9b-bdc2-80116730e65f
+[I 07:54:33.358 LabApp] Kernel started: 9d36ebd4-0678-4b5d-a33c-47fe0528df40
+[I 07:54:33.368 LabApp] Kernel started: 7373da21-94fe-429a-8c8a-b95cd89ab294
+[I 07:54:33.389 LabApp] Kernel started: 88dab1cd-9d04-4487-bf3b-4681cbe3ab8e
+[I 07:54:33.939 LabApp] Adapting to protocol v5.1 for kernel c19f4f99-3de8-4ddd-ac92-334705ee9cc2
+[I 07:54:34.214 LabApp] Adapting to protocol v5.1 for kernel c19f4f99-3de8-4ddd-ac92-334705ee9cc2
+[I 07:54:34.317 LabApp] Adapting to protocol v5.1 for kernel 7e40ec7f-3798-4a9b-bdc2-80116730e65f
+[I 07:54:34.403 LabApp] Adapting to protocol v5.1 for kernel 7e40ec7f-3798-4a9b-bdc2-80116730e65f
+[I 07:54:34.483 LabApp] Adapting to protocol v5.1 for kernel 9d36ebd4-0678-4b5d-a33c-47fe0528df40
+[I 07:54:34.558 LabApp] Adapting to protocol v5.1 for kernel 9d36ebd4-0678-4b5d-a33c-47fe0528df40
+[I 07:54:34.637 LabApp] Adapting to protocol v5.1 for kernel 7373da21-94fe-429a-8c8a-b95cd89ab294
+[I 07:54:34.712 LabApp] Adapting to protocol v5.1 for kernel 7373da21-94fe-429a-8c8a-b95cd89ab294
+[I 07:54:34.790 LabApp] Adapting to protocol v5.1 for kernel 88dab1cd-9d04-4487-bf3b-4681cbe3ab8e
+[I 07:54:34.871 LabApp] Adapting to protocol v5.1 for kernel 88dab1cd-9d04-4487-bf3b-4681cbe3ab8e
+[I 07:56:36.270 LabApp] Saving file at /ckks_titanic/notebooks/Appendix B-ap-polynomial-approximations.ipynb
+[I 07:56:36.335 LabApp] Saving file at /ckks_titanic/notebooks/1-ap-Bob.ipynb
+[W 07:56:36.336 LabApp] Notebook ckks_titanic/notebooks/1-ap-Bob.ipynb is not trusted
+[I 07:56:39.109 LabApp] Saving file at /ckks_titanic/notebooks/1-ap-Alice.ipynb
+[W 07:56:39.109 LabApp] Notebook ckks_titanic/notebooks/1-ap-Alice.ipynb is not trusted
+[I 08:02:59.616 LabApp] Copying ckks_titanic/notebooks/Appendix B-ap-polynomial-approximations.ipynb to /ckks_titanic/notebooks
+[I 08:04:38.871 LabApp] Saving file at /ckks_titanic/notebooks/Appendix C-ap-Multiprocessing.ipynb
+[I 08:06:39.784 LabApp] Saving file at /ckks_titanic/notebooks/Appendix C-ap-Multiprocessing.ipynb
+[I 08:08:40.630 LabApp] Saving file at /ckks_titanic/notebooks/Appendix C-ap-Multiprocessing.ipynb
+[I 08:14:41.646 LabApp] Saving file at /ckks_titanic/notebooks/Appendix C-ap-Multiprocessing.ipynb
+[I 08:16:42.800 LabApp] Saving file at /ckks_titanic/notebooks/Appendix C-ap-Multiprocessing.ipynb
+[I 08:16:45.497 LabApp] Saving file at /ckks_titanic/notebooks/1-ap-Alice.ipynb
+[W 08:16:45.498 LabApp] Notebook ckks_titanic/notebooks/1-ap-Alice.ipynb is not trusted
+[I 08:18:43.736 LabApp] Saving file at /ckks_titanic/notebooks/Appendix C-ap-Multiprocessing.ipynb
+[I 08:20:44.843 LabApp] Saving file at /ckks_titanic/notebooks/Appendix C-ap-Multiprocessing.ipynb
+[I 08:22:45.687 LabApp] Saving file at /ckks_titanic/notebooks/Appendix C-ap-Multiprocessing.ipynb
+[I 08:26:51.678 LabApp] Saving file at /ckks_titanic/notebooks/Appendix C-ap-Multiprocessing.ipynb
+[I 08:28:57.349 LabApp] Saving file at /ckks_titanic/notebooks/Appendix C-ap-Multiprocessing.ipynb
+[I 08:30:57.939 LabApp] Saving file at /ckks_titanic/notebooks/Appendix C-ap-Multiprocessing.ipynb
+[I 08:32:58.883 LabApp] Saving file at /ckks_titanic/notebooks/Appendix C-ap-Multiprocessing.ipynb
+[W 08:34:23.929 LabApp] Notebook ckks_titanic/notebooks/0-ap-performance-evaluation-of-encrypted-logistic-regression.ipynb is not trusted
+[I 08:34:30.329 LabApp] Kernel started: 924013de-327f-465a-acd1-3636bde24bec
+[I 08:34:31.131 LabApp] Adapting to protocol v5.1 for kernel 924013de-327f-465a-acd1-3636bde24bec
+[I 08:34:59.666 LabApp] Saving file at /ckks_titanic/notebooks/Appendix C-ap-Multiprocessing.ipynb
+[I 08:36:44.358 LabApp] Saving file at /ckks_titanic/notebooks/0-ap-performance-evaluation-of-encrypted-logistic-regression.ipynb
+[W 08:36:44.359 LabApp] Notebook ckks_titanic/notebooks/0-ap-performance-evaluation-of-encrypted-logistic-regression.ipynb is not trusted
+[I 08:37:00.175 LabApp] Saving file at /ckks_titanic/notebooks/Appendix C-ap-Multiprocessing.ipynb
+[I 08:39:00.768 LabApp] Saving file at /ckks_titanic/notebooks/Appendix C-ap-Multiprocessing.ipynb
+[I 08:41:02.123 LabApp] Saving file at /ckks_titanic/notebooks/Appendix C-ap-Multiprocessing.ipynb
+[I 09:01:15.130 LabApp] Starting buffering for 924013de-327f-465a-acd1-3636bde24bec:82e40f1a-8bee-41d6-a9e1-4c3856ed4fa5
+[I 09:01:15.132 LabApp] Starting buffering for 88dab1cd-9d04-4487-bf3b-4681cbe3ab8e:675ad905-bc74-450f-9c4c-1366cd45c28d
+[I 09:01:15.133 LabApp] Starting buffering for 7373da21-94fe-429a-8c8a-b95cd89ab294:cdb65aae-2761-4538-a504-4869f1e0a867
+[I 09:01:15.135 LabApp] Starting buffering for 9d36ebd4-0678-4b5d-a33c-47fe0528df40:f55a5a6a-361c-4cef-b7a9-f0c0dcf9f3c2
+[I 09:01:15.139 LabApp] Starting buffering for 7e40ec7f-3798-4a9b-bdc2-80116730e65f:738e8c25-a1c9-4e65-b827-1add629907db
+[I 09:01:15.141 LabApp] Starting buffering for c19f4f99-3de8-4ddd-ac92-334705ee9cc2:cc9cadc5-0f36-483d-bd09-aee626910c4b
+[I 09:20:26.774 LabApp] Adapting to protocol v5.1 for kernel 88dab1cd-9d04-4487-bf3b-4681cbe3ab8e
+[I 09:20:26.775 LabApp] Restoring connection for 88dab1cd-9d04-4487-bf3b-4681cbe3ab8e:675ad905-bc74-450f-9c4c-1366cd45c28d
+[I 09:20:26.852 LabApp] Adapting to protocol v5.1 for kernel 924013de-327f-465a-acd1-3636bde24bec
+[I 09:20:26.852 LabApp] Restoring connection for 924013de-327f-465a-acd1-3636bde24bec:82e40f1a-8bee-41d6-a9e1-4c3856ed4fa5
+[I 09:20:26.944 LabApp] Adapting to protocol v5.1 for kernel 7373da21-94fe-429a-8c8a-b95cd89ab294
+[I 09:20:27.137 LabApp] Adapting to protocol v5.1 for kernel 7373da21-94fe-429a-8c8a-b95cd89ab294
+[I 09:20:27.217 LabApp] Adapting to protocol v5.1 for kernel c19f4f99-3de8-4ddd-ac92-334705ee9cc2
+[I 09:20:27.218 LabApp] Restoring connection for c19f4f99-3de8-4ddd-ac92-334705ee9cc2:cc9cadc5-0f36-483d-bd09-aee626910c4b
+[I 09:20:27.292 LabApp] Adapting to protocol v5.1 for kernel 9d36ebd4-0678-4b5d-a33c-47fe0528df40
+[I 09:20:27.371 LabApp] Adapting to protocol v5.1 for kernel 9d36ebd4-0678-4b5d-a33c-47fe0528df40
+[I 09:20:27.461 LabApp] Adapting to protocol v5.1 for kernel 7e40ec7f-3798-4a9b-bdc2-80116730e65f
+[I 09:20:27.462 LabApp] Restoring connection for 7e40ec7f-3798-4a9b-bdc2-80116730e65f:738e8c25-a1c9-4e65-b827-1add629907db
+[I 09:20:27.535 LabApp] Adapting to protocol v5.1 for kernel 88dab1cd-9d04-4487-bf3b-4681cbe3ab8e
+[I 09:20:29.054 LabApp] Adapting to protocol v5.1 for kernel 7e40ec7f-3798-4a9b-bdc2-80116730e65f
+[I 09:22:16.285 LabApp] Saving file at /ckks_titanic/notebooks/Appendix C-ap-Multiprocessing.ipynb
+[I 09:24:16.866 LabApp] Saving file at /ckks_titanic/notebooks/Appendix C-ap-Multiprocessing.ipynb
+[I 09:26:17.507 LabApp] Saving file at /ckks_titanic/notebooks/Appendix C-ap-Multiprocessing.ipynb
+[I 09:28:18.312 LabApp] Saving file at /ckks_titanic/notebooks/Appendix C-ap-Multiprocessing.ipynb
+[I 09:30:18.962 LabApp] Saving file at /ckks_titanic/notebooks/Appendix C-ap-Multiprocessing.ipynb
+[I 09:32:19.839 LabApp] Saving file at /ckks_titanic/notebooks/Appendix C-ap-Multiprocessing.ipynb
+[I 09:34:20.603 LabApp] Saving file at /ckks_titanic/notebooks/Appendix C-ap-Multiprocessing.ipynb
+[I 09:36:21.392 LabApp] Saving file at /ckks_titanic/notebooks/Appendix C-ap-Multiprocessing.ipynb
+[I 09:38:21.710 LabApp] Saving file at /ckks_titanic/notebooks/Appendix C-ap-Multiprocessing.ipynb
+[I 09:40:22.611 LabApp] Saving file at /ckks_titanic/notebooks/Appendix C-ap-Multiprocessing.ipynb
+[I 09:42:23.393 LabApp] Saving file at /ckks_titanic/notebooks/Appendix C-ap-Multiprocessing.ipynb
+[I 09:44:23.706 LabApp] Saving file at /ckks_titanic/notebooks/Appendix C-ap-Multiprocessing.ipynb
+[I 09:48:24.226 LabApp] Saving file at /ckks_titanic/notebooks/Appendix C-ap-Multiprocessing.ipynb
+[I 09:50:25.017 LabApp] Saving file at /ckks_titanic/notebooks/Appendix C-ap-Multiprocessing.ipynb
+[I 09:52:26.336 LabApp] Saving file at /ckks_titanic/notebooks/Appendix C-ap-Multiprocessing.ipynb
+[I 10:03:10.115 LabApp] Starting buffering for 7e40ec7f-3798-4a9b-bdc2-80116730e65f:738e8c25-a1c9-4e65-b827-1add629907db
+[I 10:03:10.117 LabApp] Starting buffering for 9d36ebd4-0678-4b5d-a33c-47fe0528df40:9fa50793-266c-4cc2-93b2-533c77b69221
+[I 10:03:10.117 LabApp] Starting buffering for c19f4f99-3de8-4ddd-ac92-334705ee9cc2:cc9cadc5-0f36-483d-bd09-aee626910c4b
+[I 10:03:10.120 LabApp] Starting buffering for 7373da21-94fe-429a-8c8a-b95cd89ab294:11a78bc9-5d81-4354-9b2c-38682c7ba9cd
+[I 10:03:10.121 LabApp] Starting buffering for 924013de-327f-465a-acd1-3636bde24bec:82e40f1a-8bee-41d6-a9e1-4c3856ed4fa5
+[I 10:03:10.122 LabApp] Starting buffering for 88dab1cd-9d04-4487-bf3b-4681cbe3ab8e:675ad905-bc74-450f-9c4c-1366cd45c28d
+[I 11:11:03.097 LabApp] Adapting to protocol v5.1 for kernel 924013de-327f-465a-acd1-3636bde24bec
+[I 11:11:03.097 LabApp] Restoring connection for 924013de-327f-465a-acd1-3636bde24bec:82e40f1a-8bee-41d6-a9e1-4c3856ed4fa5
+[I 11:11:03.244 LabApp] Adapting to protocol v5.1 for kernel c19f4f99-3de8-4ddd-ac92-334705ee9cc2
+[I 11:11:03.244 LabApp] Restoring connection for c19f4f99-3de8-4ddd-ac92-334705ee9cc2:cc9cadc5-0f36-483d-bd09-aee626910c4b
+[I 11:11:03.538 LabApp] Adapting to protocol v5.1 for kernel 7373da21-94fe-429a-8c8a-b95cd89ab294
+[I 11:11:03.539 LabApp] Restoring connection for 7373da21-94fe-429a-8c8a-b95cd89ab294:11a78bc9-5d81-4354-9b2c-38682c7ba9cd
+[I 11:11:03.887 LabApp] Adapting to protocol v5.1 for kernel 7e40ec7f-3798-4a9b-bdc2-80116730e65f
+[I 11:11:03.954 LabApp] Adapting to protocol v5.1 for kernel 9d36ebd4-0678-4b5d-a33c-47fe0528df40
+[I 11:11:03.954 LabApp] Restoring connection for 9d36ebd4-0678-4b5d-a33c-47fe0528df40:9fa50793-266c-4cc2-93b2-533c77b69221
+[I 11:11:04.030 LabApp] Adapting to protocol v5.1 for kernel 88dab1cd-9d04-4487-bf3b-4681cbe3ab8e
+[I 11:11:04.030 LabApp] Restoring connection for 88dab1cd-9d04-4487-bf3b-4681cbe3ab8e:675ad905-bc74-450f-9c4c-1366cd45c28d
+[I 11:11:04.098 LabApp] Adapting to protocol v5.1 for kernel 7e40ec7f-3798-4a9b-bdc2-80116730e65f
+[I 11:11:04.174 LabApp] Adapting to protocol v5.1 for kernel 7373da21-94fe-429a-8c8a-b95cd89ab294
+[I 11:11:04.282 LabApp] Adapting to protocol v5.1 for kernel 9d36ebd4-0678-4b5d-a33c-47fe0528df40
+[I 11:11:04.349 LabApp] Adapting to protocol v5.1 for kernel 88dab1cd-9d04-4487-bf3b-4681cbe3ab8e
+[W 13:00:33.098 LabApp] WebSocket ping timeout after 119619 ms.
+[W 13:00:33.245 LabApp] WebSocket ping timeout after 119647 ms.
+[W 13:00:33.539 LabApp] WebSocket ping timeout after 119620 ms.
+[W 13:00:33.889 LabApp] WebSocket ping timeout after 119685 ms.
+[W 13:00:33.955 LabApp] WebSocket ping timeout after 119709 ms.
+[W 13:00:34.031 LabApp] WebSocket ping timeout after 119265 ms.
+[W 13:00:34.100 LabApp] WebSocket ping timeout after 119685 ms.
+[W 13:00:34.175 LabApp] WebSocket ping timeout after 119690 ms.
+[W 13:00:34.283 LabApp] WebSocket ping timeout after 119689 ms.
+[W 13:00:34.352 LabApp] WebSocket ping timeout after 119613 ms.
+[I 13:00:38.102 LabApp] Starting buffering for 924013de-327f-465a-acd1-3636bde24bec:82e40f1a-8bee-41d6-a9e1-4c3856ed4fa5
+[I 13:00:38.247 LabApp] Starting buffering for c19f4f99-3de8-4ddd-ac92-334705ee9cc2:cc9cadc5-0f36-483d-bd09-aee626910c4b
+[I 13:00:39.101 LabApp] Starting buffering for 7e40ec7f-3798-4a9b-bdc2-80116730e65f:738e8c25-a1c9-4e65-b827-1add629907db
+[I 13:00:39.176 LabApp] Starting buffering for 7373da21-94fe-429a-8c8a-b95cd89ab294:cdb65aae-2761-4538-a504-4869f1e0a867
+[I 13:00:39.284 LabApp] Starting buffering for 9d36ebd4-0678-4b5d-a33c-47fe0528df40:f55a5a6a-361c-4cef-b7a9-f0c0dcf9f3c2
+[I 13:00:39.352 LabApp] Starting buffering for 88dab1cd-9d04-4487-bf3b-4681cbe3ab8e:c26c2d64-2760-4a63-ba30-abff675a1347
+[I 13:05:15.185 LabApp] Saving file at /ckks_titanic/notebooks/Appendix C-ap-Multiprocessing.ipynb
+[I 13:06:49.885 LabApp] Adapting to protocol v5.1 for kernel 924013de-327f-465a-acd1-3636bde24bec
+[I 13:06:49.885 LabApp] Restoring connection for 924013de-327f-465a-acd1-3636bde24bec:82e40f1a-8bee-41d6-a9e1-4c3856ed4fa5
+[I 13:06:50.274 LabApp] Adapting to protocol v5.1 for kernel c19f4f99-3de8-4ddd-ac92-334705ee9cc2
+[I 13:06:50.274 LabApp] Restoring connection for c19f4f99-3de8-4ddd-ac92-334705ee9cc2:cc9cadc5-0f36-483d-bd09-aee626910c4b
+[I 13:06:50.644 LabApp] Adapting to protocol v5.1 for kernel 7373da21-94fe-429a-8c8a-b95cd89ab294
+[I 13:06:50.928 LabApp] Adapting to protocol v5.1 for kernel 9d36ebd4-0678-4b5d-a33c-47fe0528df40
+[I 13:06:52.359 LabApp] Adapting to protocol v5.1 for kernel 7e40ec7f-3798-4a9b-bdc2-80116730e65f
+[I 13:06:52.359 LabApp] Restoring connection for 7e40ec7f-3798-4a9b-bdc2-80116730e65f:738e8c25-a1c9-4e65-b827-1add629907db
+[I 13:06:52.685 LabApp] Adapting to protocol v5.1 for kernel 7373da21-94fe-429a-8c8a-b95cd89ab294
+[I 13:06:52.927 LabApp] Adapting to protocol v5.1 for kernel 7e40ec7f-3798-4a9b-bdc2-80116730e65f
+[I 13:06:53.151 LabApp] Adapting to protocol v5.1 for kernel 9d36ebd4-0678-4b5d-a33c-47fe0528df40
+[I 13:06:53.262 LabApp] Adapting to protocol v5.1 for kernel 88dab1cd-9d04-4487-bf3b-4681cbe3ab8e
+[I 13:06:53.262 LabApp] Restoring connection for 88dab1cd-9d04-4487-bf3b-4681cbe3ab8e:c26c2d64-2760-4a63-ba30-abff675a1347
+[I 13:06:53.350 LabApp] Adapting to protocol v5.1 for kernel 88dab1cd-9d04-4487-bf3b-4681cbe3ab8e
+[I 13:07:15.510 LabApp] Saving file at /ckks_titanic/notebooks/Appendix C-ap-Multiprocessing.ipynb
+[I 13:09:18.737 LabApp] Saving file at /ckks_titanic/notebooks/Appendix C-ap-Multiprocessing.ipynb
+[I 13:11:43.238 LabApp] Saving file at /ckks_titanic/notebooks/Appendix C-ap-Multiprocessing.ipynb
+[I 13:15:51.160 LabApp] Saving file at /ckks_titanic/notebooks/Appendix C-ap-Multiprocessing.ipynb
+[I 13:18:07.048 LabApp] Saving file at /ckks_titanic/notebooks/Appendix C-ap-Multiprocessing.ipynb
+[W 13:18:31.228 LabApp] Replacing stale connection: 88dab1cd-9d04-4487-bf3b-4681cbe3ab8e:c26c2d64-2760-4a63-ba30-abff675a1347
+[I 13:18:36.230 LabApp] Adapting to protocol v5.1 for kernel 88dab1cd-9d04-4487-bf3b-4681cbe3ab8e
+[W 13:18:50.275 LabApp] WebSocket ping timeout after 115286 ms.
+[W 13:18:54.463 LabApp] Replacing stale connection: c19f4f99-3de8-4ddd-ac92-334705ee9cc2:cc9cadc5-0f36-483d-bd09-aee626910c4b
+[I 13:18:55.277 LabApp] Starting buffering for c19f4f99-3de8-4ddd-ac92-334705ee9cc2:cc9cadc5-0f36-483d-bd09-aee626910c4b
+[I 13:18:55.278 LabApp] Adapting to protocol v5.1 for kernel c19f4f99-3de8-4ddd-ac92-334705ee9cc2
+[I 13:18:55.279 LabApp] Restoring connection for c19f4f99-3de8-4ddd-ac92-334705ee9cc2:cc9cadc5-0f36-483d-bd09-aee626910c4b
+[I 13:22:06.308 LabApp] Saving file at /ckks_titanic/notebooks/Appendix C-ap-Multiprocessing.ipynb
+[I 13:23:07.489 LabApp] Saving file at /ckks_titanic/notebooks/1-ap-Alice.ipynb
+[W 13:23:07.489 LabApp] Notebook ckks_titanic/notebooks/1-ap-Alice.ipynb is not trusted
+[W 13:26:52.361 LabApp] WebSocket ping timeout after 119252 ms.
+[W 13:26:52.686 LabApp] WebSocket ping timeout after 119698 ms.
+[W 13:26:52.929 LabApp] WebSocket ping timeout after 119811 ms.
+[W 13:26:53.152 LabApp] WebSocket ping timeout after 119442 ms.
+[W 13:26:53.351 LabApp] WebSocket ping timeout after 119871 ms.
+[W 13:26:55.280 LabApp] WebSocket ping timeout after 119708 ms.
+[I 13:26:57.930 LabApp] Starting buffering for 7e40ec7f-3798-4a9b-bdc2-80116730e65f:c20fdbfa-2459-4547-b20a-d7867eb62e1d
+[I 13:27:00.281 LabApp] Starting buffering for c19f4f99-3de8-4ddd-ac92-334705ee9cc2:cc9cadc5-0f36-483d-bd09-aee626910c4b
+[W 13:27:06.232 LabApp] WebSocket ping timeout after 119681 ms.
+[I 13:27:11.235 LabApp] Starting buffering for 88dab1cd-9d04-4487-bf3b-4681cbe3ab8e:c26c2d64-2760-4a63-ba30-abff675a1347
+[W 13:27:19.887 LabApp] WebSocket ping timeout after 118011 ms.
+[W 13:27:20.646 LabApp] WebSocket ping timeout after 119684 ms.
+[W 13:27:20.930 LabApp] WebSocket ping timeout after 119730 ms.
+[I 13:27:24.888 LabApp] Starting buffering for 924013de-327f-465a-acd1-3636bde24bec:82e40f1a-8bee-41d6-a9e1-4c3856ed4fa5
+[I 13:27:25.648 LabApp] Starting buffering for 7373da21-94fe-429a-8c8a-b95cd89ab294:11a78bc9-5d81-4354-9b2c-38682c7ba9cd
+[I 13:27:25.932 LabApp] Starting buffering for 9d36ebd4-0678-4b5d-a33c-47fe0528df40:9fa50793-266c-4cc2-93b2-533c77b69221
+[I 13:28:03.821 LabApp] Adapting to protocol v5.1 for kernel 7e40ec7f-3798-4a9b-bdc2-80116730e65f
+[I 13:29:34.175 LabApp] Saving file at /ckks_titanic/notebooks/Appendix C-ap-Multiprocessing.ipynb
+[I 13:29:35.800 LabApp] Saving file at /ckks_titanic/notebooks/Appendix C-ap-Multiprocessing.ipynb
+[I 13:29:37.274 LabApp] Saving file at /ckks_titanic/notebooks/Appendix C-ap-Multiprocessing.ipynb
+[I 13:29:38.193 LabApp] Saving file at /ckks_titanic/notebooks/Appendix C-ap-Multiprocessing.ipynb
+[I 13:29:38.243 LabApp] Saving file at /ckks_titanic/notebooks/Appendix C-ap-Multiprocessing.ipynb
+[I 13:29:38.514 LabApp] Saving file at /ckks_titanic/notebooks/Appendix C-ap-Multiprocessing.ipynb
+[I 13:30:42.435 LabApp] Saving file at /ckks_titanic/notebooks/1-ap-Alice.ipynb
+[W 13:30:42.435 LabApp] Notebook ckks_titanic/notebooks/1-ap-Alice.ipynb is not trusted
+[I 13:33:09.605 LabApp] Adapting to protocol v5.1 for kernel 7373da21-94fe-429a-8c8a-b95cd89ab294
+[I 13:33:10.176 LabApp] Adapting to protocol v5.1 for kernel 88dab1cd-9d04-4487-bf3b-4681cbe3ab8e
+[I 13:33:10.731 LabApp] Adapting to protocol v5.1 for kernel 9d36ebd4-0678-4b5d-a33c-47fe0528df40
+[I 13:33:12.170 LabApp] Adapting to protocol v5.1 for kernel c19f4f99-3de8-4ddd-ac92-334705ee9cc2
+[I 13:33:12.170 LabApp] Restoring connection for c19f4f99-3de8-4ddd-ac92-334705ee9cc2:cc9cadc5-0f36-483d-bd09-aee626910c4b
+[I 13:33:20.123 LabApp] Adapting to protocol v5.1 for kernel 7e40ec7f-3798-4a9b-bdc2-80116730e65f
+[I 13:33:24.220 LabApp] Adapting to protocol v5.1 for kernel 88dab1cd-9d04-4487-bf3b-4681cbe3ab8e
+[I 13:33:38.622 LabApp] Adapting to protocol v5.1 for kernel 7373da21-94fe-429a-8c8a-b95cd89ab294
+[I 13:33:42.218 LabApp] Adapting to protocol v5.1 for kernel 9d36ebd4-0678-4b5d-a33c-47fe0528df40
+[I 13:33:42.792 LabApp] Adapting to protocol v5.1 for kernel 924013de-327f-465a-acd1-3636bde24bec
+[I 13:33:42.792 LabApp] Restoring connection for 924013de-327f-465a-acd1-3636bde24bec:82e40f1a-8bee-41d6-a9e1-4c3856ed4fa5
+[I 13:37:13.669 LabApp] Creating new directory in /ckks_titanic/reports
+[I 13:44:12.486 LabApp] Saving file at /ckks_titanic/notebooks/Appendix C-ap-Multiprocessing.ipynb
+[I 13:50:20.735 LabApp] Saving file at /ckks_titanic/notebooks/Appendix C-ap-Multiprocessing.ipynb
+[I 13:52:21.055 LabApp] Saving file at /ckks_titanic/notebooks/Appendix C-ap-Multiprocessing.ipynb
+[I 13:54:23.187 LabApp] Saving file at /ckks_titanic/notebooks/Appendix C-ap-Multiprocessing.ipynb
+[I 13:56:23.621 LabApp] Saving file at /ckks_titanic/notebooks/Appendix C-ap-Multiprocessing.ipynb
+[I 13:56:54.559 LabApp] Starting buffering for 7e40ec7f-3798-4a9b-bdc2-80116730e65f:c20fdbfa-2459-4547-b20a-d7867eb62e1d
+[I 13:56:54.873 LabApp] Kernel restarted: 7e40ec7f-3798-4a9b-bdc2-80116730e65f
+[I 13:56:55.781 LabApp] Adapting to protocol v5.1 for kernel 7e40ec7f-3798-4a9b-bdc2-80116730e65f
+[I 13:56:55.781 LabApp] Restoring connection for 7e40ec7f-3798-4a9b-bdc2-80116730e65f:c20fdbfa-2459-4547-b20a-d7867eb62e1d
+[I 13:56:55.781 LabApp] Replaying 7 buffered messages
+[I 13:56:55.864 LabApp] Adapting to protocol v5.1 for kernel 7e40ec7f-3798-4a9b-bdc2-80116730e65f
+[I 13:58:24.130 LabApp] Saving file at /ckks_titanic/notebooks/Appendix C-ap-Multiprocessing.ipynb
+[I 14:04:25.594 LabApp] Saving file at /ckks_titanic/notebooks/Appendix C-ap-Multiprocessing.ipynb
+[I 14:06:26.315 LabApp] Saving file at /ckks_titanic/notebooks/Appendix C-ap-Multiprocessing.ipynb
+[I 14:08:26.676 LabApp] Saving file at /ckks_titanic/notebooks/Appendix C-ap-Multiprocessing.ipynb
+[I 14:10:27.019 LabApp] Saving file at /ckks_titanic/notebooks/Appendix C-ap-Multiprocessing.ipynb
+[I 14:14:28.083 LabApp] Saving file at /ckks_titanic/notebooks/Appendix C-ap-Multiprocessing.ipynb
+[I 14:26:11.898 LabApp] Kernel shutdown: c19f4f99-3de8-4ddd-ac92-334705ee9cc2
+[I 14:26:12.141 LabApp] Kernel shutdown: 9d36ebd4-0678-4b5d-a33c-47fe0528df40
+[I 14:26:12.343 LabApp] Kernel shutdown: 88dab1cd-9d04-4487-bf3b-4681cbe3ab8e
+[I 14:26:12.544 LabApp] Kernel shutdown: 7373da21-94fe-429a-8c8a-b95cd89ab294
+[I 14:26:12.745 LabApp] Kernel shutdown: 924013de-327f-465a-acd1-3636bde24bec
+[I 14:26:17.847 LabApp] Kernel shutdown: 7e40ec7f-3798-4a9b-bdc2-80116730e65f
+[W 14:26:17.855 LabApp] Got events for closed stream None
+[W 14:26:17.855 LabApp] Got events for closed stream None
+[W 14:26:17.855 LabApp] Got events for closed stream None
+[W 14:26:17.855 LabApp] Got events for closed stream None
+[W 14:26:17.855 LabApp] Got events for closed stream None
+[W 14:26:17.856 LabApp] Got events for closed stream None
+[I 14:26:17.938 LabApp] Kernel started: 2fcc8747-a522-4465-b6fc-ed4c43a573d8
+[W 14:26:17.939 LabApp] Got events for closed stream None
+[W 14:26:17.939 LabApp] Got events for closed stream None
+[I 14:26:22.155 LabApp] Adapting to protocol v5.1 for kernel 2fcc8747-a522-4465-b6fc-ed4c43a573d8
+[I 14:26:30.753 LabApp] Saving file at /ckks_titanic/notebooks/Appendix C-ap-Multiprocessing.ipynb
+[I 14:28:31.778 LabApp] Saving file at /ckks_titanic/notebooks/Appendix C-ap-Multiprocessing.ipynb
+[I 14:32:32.704 LabApp] Saving file at /ckks_titanic/notebooks/Appendix C-ap-Multiprocessing.ipynb
+[I 14:35:51.236 LabApp] Starting buffering for 2fcc8747-a522-4465-b6fc-ed4c43a573d8:10182fe5-df6e-4941-868d-ca8ce618fb7a
+[I 14:35:56.308 LabApp] Kernel restarted: 2fcc8747-a522-4465-b6fc-ed4c43a573d8
+[I 14:35:57.469 LabApp] Adapting to protocol v5.1 for kernel 2fcc8747-a522-4465-b6fc-ed4c43a573d8
+[I 14:35:57.470 LabApp] Restoring connection for 2fcc8747-a522-4465-b6fc-ed4c43a573d8:10182fe5-df6e-4941-868d-ca8ce618fb7a
+[I 14:36:33.733 LabApp] Saving file at /ckks_titanic/notebooks/Appendix C-ap-Multiprocessing.ipynb
+[I 14:42:35.573 LabApp] Saving file at /ckks_titanic/notebooks/Appendix C-ap-Multiprocessing.ipynb
+[I 14:44:36.029 LabApp] Saving file at /ckks_titanic/notebooks/Appendix C-ap-Multiprocessing.ipynb
+[I 14:48:36.353 LabApp] Saving file at /ckks_titanic/notebooks/Appendix C-ap-Multiprocessing.ipynb
+[I 15:26:36.736 LabApp] Saving file at /ckks_titanic/notebooks/Appendix C-ap-Multiprocessing.ipynb
+[I 15:28:37.066 LabApp] Saving file at /ckks_titanic/notebooks/Appendix C-ap-Multiprocessing.ipynb
+[I 15:30:37.416 LabApp] Saving file at /ckks_titanic/notebooks/Appendix C-ap-Multiprocessing.ipynb
+[I 15:32:37.732 LabApp] Saving file at /ckks_titanic/notebooks/Appendix C-ap-Multiprocessing.ipynb
+[I 15:34:38.052 LabApp] Saving file at /ckks_titanic/notebooks/Appendix C-ap-Multiprocessing.ipynb
+[I 15:36:00.645 LabApp] Starting buffering for 2fcc8747-a522-4465-b6fc-ed4c43a573d8:10182fe5-df6e-4941-868d-ca8ce618fb7a
+[I 15:36:01.260 LabApp] Kernel restarted: 2fcc8747-a522-4465-b6fc-ed4c43a573d8
+[I 15:36:02.142 LabApp] Adapting to protocol v5.1 for kernel 2fcc8747-a522-4465-b6fc-ed4c43a573d8
+[I 15:36:02.142 LabApp] Restoring connection for 2fcc8747-a522-4465-b6fc-ed4c43a573d8:10182fe5-df6e-4941-868d-ca8ce618fb7a
+[I 15:36:02.142 LabApp] Replaying 7 buffered messages
+[I 15:36:04.653 LabApp] Starting buffering for 2fcc8747-a522-4465-b6fc-ed4c43a573d8:10182fe5-df6e-4941-868d-ca8ce618fb7a
+[I 15:36:04.865 LabApp] Kernel restarted: 2fcc8747-a522-4465-b6fc-ed4c43a573d8
+[I 15:36:06.057 LabApp] Adapting to protocol v5.1 for kernel 2fcc8747-a522-4465-b6fc-ed4c43a573d8
+[I 15:36:06.057 LabApp] Restoring connection for 2fcc8747-a522-4465-b6fc-ed4c43a573d8:10182fe5-df6e-4941-868d-ca8ce618fb7a
+[I 15:36:06.057 LabApp] Replaying 9 buffered messages
+[I 15:36:38.351 LabApp] Saving file at /ckks_titanic/notebooks/Appendix C-ap-Multiprocessing.ipynb
+[I 15:38:38.665 LabApp] Saving file at /ckks_titanic/notebooks/Appendix C-ap-Multiprocessing.ipynb
+[I 15:41:41.902 LabApp] Saving file at /ckks_titanic/notebooks/Appendix C-ap-Multiprocessing.ipynb
+[I 15:41:50.475 LabApp] Starting buffering for 2fcc8747-a522-4465-b6fc-ed4c43a573d8:10182fe5-df6e-4941-868d-ca8ce618fb7a
