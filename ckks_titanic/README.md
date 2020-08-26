@@ -1,4 +1,4 @@
-CKKS_titanic
+Privacy-preserving resolution of the titanic challenge using CKKS homomorphic encryption
 ==============================
 
 This project implements a solution to the titanic data science problem using homomorphic encryption.
