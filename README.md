@@ -1,6 +1,8 @@
 Privacy-preserving resolution of the titanic challenge using CKKS homomorphic encryption
 ==============================
 
+**Author:** Arthur Pignet
+
 This project implements a solution to the titanic data science problem using homomorphic encryption.
 The Titanic problem from Kaggle, [Titanic: Machine Learning from Disaster](https://www.kaggle.com/c/titanic/), is a well-known classification problem. The objective is to predict, from a set of given features, whether or not someone survived to the famous sinking. 
  
