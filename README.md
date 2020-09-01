@@ -126,6 +126,7 @@ Please denote that the project needs lots of memory (I recorded a peak memory of
 
 --------
 
+All the project was done during a summer internship (June 2020 to August 2020) at [Equancy](http://www.equancy.fr/en). I would like to thank Hervé MIGNOT (Equancy) who drove me during these months. 
 
 
 <p><small>Project based on the <a target="_blank" href="http://git.equancy.io/tools/cookiecutter-data-science-project/">cookiecutter data science project template</a>. #cookiecutterdatascience</small></p>
